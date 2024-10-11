@@ -1,0 +1,176 @@
+// Copyright 2024 BioID GmbH.
+// Specification of the BioID Web Service (BWS) API.
+
+syntax = "proto3";
+
+package bioid.services.v1;
+
+option java_package = "com.bioid.services";
+option csharp_namespace = "BioID.Services";
+
+// BioID Web Service definition.
+service BioIDWebService {
+    // enhanced quality checks according to ISO/IEC 29794-5:2022 and ICAO Doc 9303
+    //rpc QualityAssessment (QualityAssessmentRequest) returns (QualityAssessmentResponse);
+
+    // Liveness-detection API
+    // - 1 image: passive liveness detection only
+    // - 2 images: passive and active liveness detection
+    // - 2 images and tags: active liveness detection with challenge response
+    rpc LivenessDetection (LivenessDetectionRequest) returns (LivenessDetectionResponse);
+    // Video liveness-detection API
+    rpc VideoLivenessDetection (VideoLivenessDetectionRequest) returns (LivenessDetectionResponse);
+    // Photo-verification API
+    rpc PhotoVerify (PhotoVerifyRequest) returns (PhotoVerifyResponse);
+
+    // TODO when we have template management specified
+    // enrollment of a user (BCID) with one or more images
+    //rpc Enrollment (EnrollmentRequest) returns (EnrollmentResponse);
+    // returns thumbs of enrolled user images (if available)
+    //rpc GetEnrollmentStatus (EnrollmentStatusRequest) returns (EnrollmentStatusResponse);
+    // one to one verification of a enrolled user (BCID) with one or more images
+    //rpc Verification (VerificationRequest) returns (VerificationResponse);
+    // a range of users can be arranged in closed identification sets
+    //rpc DefineIdentificationSet (DefineIdentificationSetRequest) returns (DefineIdentificationSetResponse);
+    // perform one to many identification of one or more images in predefined identification set
+    //rpc Identification (IdentificationRequest) returns (IdentificationResponse);
+}
+
+// Liveness detection input images.
+message LivenessDetectionRequest {
+    // The input image samples.
+    repeated ImageData live_images = 1;
+}
+
+// Video liveness detection input video.
+message VideoLivenessDetectionRequest {
+    // The input video.
+    bytes video = 1;
+}
+
+// Liveness detection output.
+message LivenessDetectionResponse {
+    // The return-status of the processing job.
+    JobStatus status = 1;
+    // Any error messages collected during processing.
+    repeated JobError errors = 2;
+    // Calculated image properties for each of the provided images in the given order.
+    repeated ImageProperties image_properties = 3;
+    // The liveness decision.
+    bool live = 4;
+    // The calculated liveness score that led to the live decision.
+    double liveness_score = 5;
+}
+
+// Photo-verification input images and flags.
+message PhotoVerifyRequest {
+    // One or more live images.
+    repeated ImageData live_images = 1;
+    // The ID-photo image.
+    bytes photo = 2;
+    // Flag to switch off LivenessDetection which is enabled by default.
+    bool disable_liveness_detection = 3;
+}
+
+// Photo-verification output.
+message PhotoVerifyResponse {
+    // The return-status of the processing job.
+    JobStatus status = 1;
+    // Any error messages collected during processing.
+    repeated JobError errors = 2;
+    // Calculated image properties for each of the provided live images if available.
+    repeated ImageProperties image_properties = 3;
+    // Calculated image properties for the provided photo.
+    ImageProperties photo_properties = 4;
+    // The determined verification level.
+    AccuracyLevel verification_level = 5;
+    // The calculated verification score that led to the decision for the verification level.
+    double verification_score = 6;
+    // In case a liveness detection was performed, here is the liveness decision.
+    bool live = 7;
+    // The calculated liveness score that led to the live decision.
+    double liveness_score = 8;
+
+    // Verification accuracy levels.
+    // We recommend not to accept verified persons with low verification levels.
+    enum AccuracyLevel {
+        // The person has not be recognized at all.
+        NOT_RECOGNIZED = 0;
+        // Worst accuracy level that correlates with a FAR of 0.5%
+        LEVEL_1 = 1;
+        // Bad accuracy level that correlates with a FAR of 0.25%
+        LEVEL_2 = 2;
+        // Not so good accuracy level that correlates with a FAR of 0.1%
+        LEVEL_3 = 3;
+        // Good accuracy level that correlates with a FAR of 0.01%
+        LEVEL_4 = 4;
+        // Best accuracy level that correlates with a FAR of 0.001%
+        LEVEL_5 = 5;
+    }
+}
+
+// Possible returned job status values.
+enum JobStatus {
+    // The job finished successfully.
+    SUCCEEDED = 0;
+    // The job has been aborted due to one or more errors.
+    FAULTED = 1;
+    // The job has been cancelled.
+    CANCELLED = 2;
+}
+
+// Errors collected with BWS jobs.
+message JobError {
+    // The error-code identifying the reported error message.
+    string error_code = 1;
+    // The error message describing the error.
+    string message = 2;
+}
+
+// Sample containing an image and some optional tags associated with this image sample.
+message ImageData {
+    // The image.
+    bytes image = 1;
+    // Optional list of tags associated with this image.
+    repeated string tags = 2;
+}
+
+// Calculated properties from a single input image.
+message ImageProperties {
+    // Rotation of the input image. 
+    // If not 0, the coordinates relate to an image rotated clockwise by this amount of degrees.
+    int32 rotated = 1;
+    // List of faces found in the image.
+    repeated Face faces = 2;
+    // An optionally calculated quality assessment score.
+    double quality_score = 3;
+    // List of quality checks and other checks performed.
+    repeated QualityAssessment quality_assessments = 4;
+    // Optional frame number in case the input was a video.
+    int32 frame_number = 5;
+}
+
+// Informational messages collected with BWS jobs during processing of an image to give feedback to users.
+message QualityAssessment {
+    // The quality check performed.
+    string check = 1;
+    // The outcome of the quality check. A score in the range [0.0, 1.0].
+    // The higher the value, the better the check was passed.
+    double score = 2;
+    // A text with additional info about this quality assessment.
+    string message = 3;
+}
+
+// Describes some landmarks of a found face within an image together with some optional scores generated by additional DCNNs.
+// Important note: It is assumed that the face image is mirrored, i.e. the right eye is on the left side of the image and vice versa!
+message Face {
+    PointD left_eye = 2; 
+    PointD right_eye = 3;
+    double texture_liveness_score = 11;
+    double motion_liveness_score = 12;
+    double movement_direction = 13;
+}
+message PointD {
+    double x = 1;
+    double y = 2;
+}

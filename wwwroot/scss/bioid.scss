@@ -1,0 +1,249 @@
+﻿// import our customized Bootstrap variables
+@import "bootstrap";
+// load custom fonts used by BioID
+@import "fonts";
+
+// main layout
+main {
+    // keep some space on top for the navbar
+    > .container-fluid {
+        padding-top: 7rem;
+    }
+}
+
+// the fixed navbar style
+.navbar {
+    padding: 1rem;
+
+    .navbar-title {
+        position: absolute;
+        top: 2.5rem;
+        left: 50%;
+        transform: translate(-50%);
+        padding: 0 2rem;
+    }
+
+    .navbar-logo {
+        width: 7rem;
+    }
+
+    &.bg-light {
+        background-color: white !important;
+        box-shadow: 0px 1px 5px tint-color($bioid-dark, 85%);
+    }
+
+    @include media-breakpoint-down(md) {
+        .navbar-nav {
+            padding-top: 1rem;
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+        &.bg-light {
+            background-color: rgba(white, .95) !important;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        padding: 1rem 4rem;
+    }
+
+    @include media-breakpoint-up(xl) {
+        padding: 1rem 7rem;
+    }
+
+    @include media-breakpoint-up(xxl) {
+        padding: 1rem 10rem;
+    }
+}
+
+// our custom buttons
+.btn {
+    border-radius: .3rem;
+    padding: .5rem 2rem .5rem 2rem
+}
+
+.btn-nav {
+    position: fixed;
+    width: 5.5rem;
+    height: 5.5rem;
+    top: 0rem;
+    right: 0;
+    padding: 0rem;
+    border-radius: 0;
+    font-size: 0.7rem;
+    display: flex;
+    box-shadow: 0px 10px 15px -5px rgba(0,0,0,0.3);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    > svg {
+        font-size: 3em;
+        margin-bottom: 0.5rem;
+    }
+
+    &:hover, &:focus {
+        background-color: $bioid-blue;
+        border-color: $bioid-blue;
+    }
+
+    &.btn-nav1 {
+        top: 8rem;
+    }
+
+    &.btn-nav2 {
+        top: 15rem;
+    }
+
+    &.btn-nav3 {
+        top: 22rem;
+    }
+}
+
+.scrollToTopBtn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 100;
+    opacity: 0;
+    transform: translateY(100px);
+    transition: all .8s ease;
+    padding: 0.5rem;
+}
+
+.showBtn {
+    opacity: 1;
+    transform: translateY(0)
+}
+
+.demo {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    img {
+        width: 6rem;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        margin-bottom: 1.5rem;
+    }
+
+    button:last-child, a:last-child {
+        margin-top: auto
+    }
+}
+
+.row-gray1 {
+    background-color: $gray-100;
+}
+.row-gray2 {
+    background-color: $gray-200;
+}
+
+
+.btn-close-tr {
+    position: absolute;
+    padding: 1rem 1rem;
+    top: 0;
+    right: 0;
+}
+
+.with-overlay {
+    position: relative;
+
+    .overlay-cb1 {
+        position: absolute;
+        bottom: 1rem;
+        left: 50%;
+        transform: translate(-50%);
+    }
+
+    .overlay-tr {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+}
+
+.btn-circle {
+    width: 3rem;
+    height: 3rem;
+    padding: 0.4rem;
+    border-radius: 1.5rem;
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.50);
+}
+
+.align-center-fill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    button:last-child, a:last-child {
+        margin-top: auto
+    }
+}
+
+// rotates a expand/collapse chevron
+[data-bs-toggle="collapse"] {
+    .bi-up-down {
+        transition: .3s transform ease-in-out;
+    }
+
+    &.collapsed {
+        .bi-up-down {
+            transform: rotate(-90deg);
+        }
+    }
+}
+
+.table-far {
+    width: auto;
+
+    > :not(caption) > * > * {
+        padding: 0.25rem 1rem;
+        text-align: left;
+    }
+}
+
+.border-right-md {
+    @include media-breakpoint-up(md) {
+        border-right: 2px solid $border-color;
+    }
+
+    @include media-breakpoint-down(md) {
+        margin-bottom: 2rem;
+    }
+}
+
+.hint {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--bs-secondary-color)
+}
+
+// right-align labels in horizontal forms
+@include media-breakpoint-up(sm) {
+    .col-form-label {
+        text-align: right;
+    }
+}
+
+// reduce font-size for small devices
+@include media-breakpoint-down(md) {
+    html {
+        font-size: 0.93rem;
+    }
+}
+
+// reduce font-size even more for extra small devices
+@include media-breakpoint-down(sm) {
+    html {
+        font-size: 0.86rem;
+    }
+}

@@ -1,0 +1,190 @@
+﻿@page "~/NewDeepfakeDetection/{handler?}"
+@model NewDeepfakeDetectionModel
+@{
+    ViewData["Title"] = " New Deepfake Detection";
+    ViewData["Heading"] = "New Deepfake Detection";
+}
+
+<div class="row mb-4">
+    <div class="col-12 offset-sm-1 col-sm-10 offset-md-2 col-md-8 offset-xl-3 col-xl-6">
+        <p>
+            BioID’s <a href="https://www.bioid.com/deepfake-detection/" target="_blank" rel="noopener">Deepfake Detection</a> technology is designed to combat the latest cybersecurity threat. In particular, it discerns whether
+            a face found in an image or video is a deepfake, or has been AI-generated/-manipulated.
+        <p>
+            This is to help prevent attackers from creating a fraudulent ID document, or faking their victim’s face to gain unlawful access or financial
+            gains etc.
+        </p>
+        <p id="headingreadmore">
+            <a class="collapsed" data-bs-toggle="collapse" href="#readmore" aria-expanded="false" aria-controls="readmore">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-chevron-down bi-up-down" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                </svg>
+                Read more ...
+            </a>
+        </p>
+        <div id="readmore" class="collapse mb-4" aria-labelledby="headingreadmore">
+            <p>
+                To make it easily accessible, BioID’s "Deepfake Detection” technology has been incorporated into the existing BioID Web Service,
+                namely the Liveness Detection API. As a result, BioID’s liveness detection offering is a powerful combination of both Presentation
+                Attack Detection (PAD) and Deepfake Detection. Typical BWS applications using BioID’s liveness detection API automatically
+                get boosted with this great feature without changing their implementation. The availability of the technology also opens up
+                new ways to spot scams and hoaxes, financial fraud, fake videos (news) etc.
+            </p>
+
+            <h6>Challenges und Limitations</h6>
+            <p>
+                While BioID Deepfake Detection is a powerful state-of-the-art technology, being a new field of research, it also faces certain limitations.
+                Detecting deepfakes poses challenges, notably in balancing false positives and false negatives. A stringent detection may lead to falsely flagging genuine users and content. Conversely, leniency may result in false positives, overlooking sophisticated (deep-)fakes. As a matter of fact, creating a good balance between security and usability is and always has been, the main task for any authentication and fraud detection tool.
+
+            </p>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>A ‘fake’ face is one of the following</strong>
+                </li>
+                <li class="list-group-item">
+                    If the face is classified as a PAD spoofing attack, i.e. a printed photo, a mask, an image replayed on some devices etc.
+                </li>
+                <li class="list-group-item">
+                    If it is a face generated or manipulated using some AI tool, e.g. Midjourney, MyHeritage, Stable Diffusion and many others.
+                </li>
+                <li class="list-group-item">
+                    If it is found in a video that has been classified as one of the above.
+                </li>
+            </ul>
+        </div>
+        <p>
+            This application uses our <strong>new BWS 3</strong> APIs.
+        </p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-8 offset-2 col-sm-12 offset-sm-0 col-md-8 offset-md-2 col-xl-6 offset-xl-3 col-xxl-4 offset-xxl-4">
+        <div class="row mb-4">
+            <div class="col mb-4">
+                <div class="alert alert-primary">Simply upload a photo or a video (limited to 50 MB), the demo will tell you whether it is a ‘fake’!</div>
+                <div>
+                    <label for="select-image-video" id="image-video-file" class="btn btn-outline-secondary text-lowercase">no image/video selected yet</label>
+                    <input type="file" id="select-image-video" name="image-video" class="d-none" accept="image/*,video/*">
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center mb-5">
+            <form method="post" id="processForm">
+                <div>
+                    <button type="button" id="execute" class="btn btn-primary" disabled>
+                        <span id="processSpinner" class="spinner-border spinner-border-sm" style="display:none;" role="status"><span class="visually-hidden">processing ...</span></span>
+                        Perform deepfake detection
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div id="result-view">
+        </div>
+        <div class="mt-4">
+            <p>
+                Developer note: This demo is put together using <a href="https://developer.bioid.com/bws/grpc/livenessdetection"
+                                                                   target="_blank" rel="noopener">LivenessDetection API</a> (to send 1 image to be checked) and
+                <a href="https://developer.bioid.com/bws/grpc/videolivenessdetection" target="_blank" rel="noopener">VideoLivenessDetection API</a>
+                (to send a video). Please refer to the <a href="https://developer.bioid.com" target="_blank" rel="noopener">developer documentation</a> for more information.
+            </p>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        var video, image;
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = OnReadyStateChange;
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            document.getElementById('select-image-video').addEventListener('change', (ev) => { handleImageVideo(ev.target.files[0]); });
+
+            let files = document.getElementById('image-video-file');
+            files.addEventListener('dragenter', (ev) => { ev.stopPropagation(); ev.preventDefault(); });
+            files.addEventListener('dragover', (ev) => { ev.stopPropagation(); ev.preventDefault(); });
+            files.addEventListener('drop', (ev) => {
+                ev.stopPropagation();
+                ev.preventDefault();
+                // Use DataTransfer interface to access the file
+                if (ev.dataTransfer.files) {
+                    handleImageVideo(ev.dataTransfer.files[0]);
+                }
+            });
+
+            document.getElementById('processForm').addEventListener('submit', () => {
+                document.getElementById('process').disabled = true;
+                document.getElementById('processSpinner').style.display = "inline-block";
+            });
+
+            document.getElementById('execute').addEventListener('click', execute);
+        });
+
+        function handleImageVideo(blob) {
+            if (blob && blob.type.startsWith('video/')) {
+                console.log('Loading file:', blob);
+                video = blob;
+                document.getElementById('image-video-file').innerText = blob.name;
+                document.getElementById('execute').disabled = false;
+            }
+            if (blob && blob.type.startsWith('image/')) {
+                console.log('Loading file:', blob);
+                image = blob;
+                document.getElementById('image-video-file').innerText = blob.name;
+                document.getElementById('execute').disabled = false;
+            }
+        }
+
+        function execute() {
+            document.getElementById('execute').disabled = true;
+            document.getElementById('processSpinner').style.display = "inline-block";
+            document.getElementById('result-view').innerHTML = "";
+
+            let formData = new FormData(document.getElementById('processForm'));
+            const maxFileSize = @Model.MaxRequestSize;
+
+            if (video != null && video.size > maxFileSize ||image!= null && image.size > maxFileSize) {
+                alert("The file is too large.");
+                video = null;
+                image = null;
+                document.getElementById('processSpinner').style.display = "none"
+                return;
+            }
+
+            if (video) {
+                var blob = video;
+                video = null;
+                formData.append('video', blob);
+            }
+            else {
+                var blob = image;
+                image = null;
+                formData.append('image', blob);
+            }
+
+            xhr.open("POST", "/NewDeepfakeDetection");
+            xhr.send(formData);
+        }
+
+        function OnReadyStateChange() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status == 200) {
+                    let resultView = document.getElementById('result-view');
+                    resultView.innerHTML = this.responseText;
+                    let note = document.getElementById('privacynote');
+                    if (note) { new bootstrap.Popover(note); }
+                    let refuse = document.getElementById('refuse');
+                    if (refuse) { refuse.addEventListener('click', mismatch); }
+                } else {
+                    alert('There was an error processing the AJAX request: ' + xhr.responseText);
+                }
+                document.getElementById('processSpinner').style.display = "none";
+            }
+        };
+
+    </script>
+}

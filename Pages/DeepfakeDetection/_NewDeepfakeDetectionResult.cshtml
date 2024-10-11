@@ -1,0 +1,44 @@
+﻿@model NewDeepfakeDetectionResultModel
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorString))
+{
+    <h4 class="text-danger">BWS Deepfake detection failed:</h4>
+    <div class="text-danger text-break">@Model.ErrorString</div>
+}
+else @if (Model.Live)
+{
+    <small>BWS Deepfake Detection for '@Model.FileName' says:</small>
+    <h4 class="text-primary mb-2">The @Model.MediaType has been recorded from a live person!</h4>
+    <div>Liveness Score: @Model.LivenessScore</div>
+}
+else @if (Model.Fake)
+{
+    <small>BWS Deepfake Detection for '@Model.FileName' says:</small>
+    <h4 class="text-danger">This was a fake @Model.MediaType!</h4>
+    <div>Liveness Score: @Model.LivenessScore</div>
+}
+else
+{
+    <small>BWS Deepfake Detection says:</small>
+    <h4 class="text-danger h4">BWS Deepfake detection for '@Model.FileName' failed:</h4>
+    @foreach (var msg in Model.ErrorMessages)
+    {
+        <div class="text-danger">@msg</div>
+    }
+}
+@if (!string.IsNullOrWhiteSpace(Model.ResponseJson))
+{
+    <div class="mt-2" id="resultheading">
+        <a class="collapsed" data-bs-toggle="collapse" href="#expandResult" aria-expanded="false" aria-controls="expandResult">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-chevron-down bi-up-down" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+            </svg>
+            More result data
+        </a>
+    </div>
+    <div class="collapse border border-info" id="expandResult" aria-labelledby="resultheading">
+        <div>
+            <pre id="outputJson" class="code text-start">@Model.ResponseJson</pre>
+        </div>
+    </div>
+}

@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <meta name="description" content="BioID BWS WebApp Demo">
+    <meta name="author" content="BioID GmbH">
+    <meta name="robots" content="noindex, nofollow" />
+    <title>@ViewBag.Title</title>
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/bioid.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/bioid.min.css" />
+    </environment>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+            <h5 class="navbar-title">@ViewBag.Heading</h5>
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/" title="BioID Demo Home">
+                    <img class="navbar-logo" src="~/images/bioid.svg" alt="BioID Demo Home" />
+                </a>
+            </div>
+        </nav>
+    </header>
+    <main role="main">
+        <div class="container-fluid">
+            @RenderBody()
+        </div>
+    </main>
+
+    <hr class="mt-4" />
+
+    <footer>
+        <p class="small">
+            &copy; @DateTime.Now.Year - <a href="https://www.bioid.com" title="BioID">BioID GmbH</a> |
+            <a href="https://bwsportal.bioid.com/" rel="noopener" title="BWS Portal">BWS Portal</a> |
+            <a href="https://github.com/BioID-GmbH/" rel="noopener" title="BioID at GitHub">GitHub</a> |
+            <a href="https://www.bioid.com/contact/" rel="noopener" title="Contact us">Contact</a>
+        </p>
+    </footer>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

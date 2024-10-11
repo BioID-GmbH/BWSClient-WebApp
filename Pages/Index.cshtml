@@ -1,0 +1,44 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "BioID WebApp Demo home page";
+}
+
+<div class="row">
+    <div class="col-sm-12 offset-md-2 col-md-8">
+        <div class="row justify-content-center">
+            <div class="col-sm-6 col-lg-4 demo">
+                <a href="/LivenessDetection">
+                    <img src="~/images/LivenessDetection.svg" alt="Liveness Detection icon" />
+                </a>
+                <h4>Liveness Detection</h4>
+                <p>
+                    Test our Liveness Detection API which distinguishes a live person from fakes like images or videos, using a standard camera.
+                </p>
+                <a class="btn btn-primary" href="/LivenessDetection">Try it out</a>
+            </div>
+            <div class="col-sm-6 col-lg-4 demo">
+                <a href="/NewDeepfakeDetection">
+                    <img src="~/images/DeepfakeDetection.svg" alt="Deepfake Detection icon" />
+                </a>
+                <h4>Deepfake Detection</h4>
+                <p>
+                    BioID's new Deepfake Detection technology distinguishes whether a face
+                    in an image or video is a deepfake or has been artificially
+                    generated/manipulated using AI.
+                </p>
+                <a class="btn btn-primary" href="/NewDeepfakeDetection">Try it out</a>
+            </div>
+            <div class="col-sm-6 col-lg-4 demo">
+                <a href="/PhotoVerify">
+                    <img src="~/images/PhotoVerify.svg" alt="PhotoVerify icon" />
+                </a>
+                <h4>PhotoVerify</h4>
+                <p>
+                    Verify ID ownership with PhotoVerify: Compare an ID photo with live samples, including liveness detection.
+                </p>
+                <a class="btn btn-primary" href="/PhotoVerify">Try it out</a>
+            </div>
+        </div>
+    </div>
+</div>
