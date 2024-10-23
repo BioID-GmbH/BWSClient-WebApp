@@ -2,6 +2,9 @@
 
 namespace BioID.BWS.WebApp.Helper
 {
+    /// <summary>
+    /// Defines user-friendly hint messages based on specific error codes related to face detection.
+    /// </summary>
     public static class Extensions
     {
         public static string HintFromResult(this string code) => code switch
