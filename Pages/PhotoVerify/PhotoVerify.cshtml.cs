@@ -27,12 +27,17 @@ namespace BioID.BWS.WebApp.Pages.PhotoVerify
                     return Partial("_PhotoVerifyResult", new PhotoVerifyResultModel { ErrorString = "Missing images: at least one live image and an ID photo are required!" });
                 }
 
-                using var s = idphoto.OpenReadStream();
-                ByteString photo = await ByteString.FromStreamAsync(s).ConfigureAwait(false);
-                using var s1 = liveimage1.OpenReadStream();
-                ByteString image1 = await ByteString.FromStreamAsync(s1).ConfigureAwait(false);
-                using var s2 = liveimage2.OpenReadStream();
-                ByteString image2 = await ByteString.FromStreamAsync(s2).ConfigureAwait(false);
+                using MemoryStream idStream = new();
+                using MemoryStream liveStream1 = new();
+                using MemoryStream liveStream2 = new();
+
+                await idphoto.CopyToAsync(idStream).ConfigureAwait(false);
+                await liveimage1.CopyToAsync(liveStream1).ConfigureAwait(false);
+                await liveimage2.CopyToAsync(liveStream2).ConfigureAwait(false);
+
+                ByteString photo = ByteString.CopyFrom(idStream.ToArray());
+                ByteString image1 = ByteString.CopyFrom(liveStream1.ToArray());
+                ByteString image2 = ByteString.CopyFrom(liveStream2.ToArray());
 
                 var request = new PhotoVerifyRequest { Photo = photo };
                 request.LiveImages.Add(new ImageData() { Image = image1 });

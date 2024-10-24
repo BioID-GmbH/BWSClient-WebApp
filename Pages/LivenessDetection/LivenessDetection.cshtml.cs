@@ -24,10 +24,18 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
                 var liveimage1 = Request.Form.Files["image1"];
                 var liveimage2 = Request.Form.Files["image2"];
 
-                using var s1 = liveimage1.OpenReadStream();
-                ByteString image1 = await ByteString.FromStreamAsync(s1).ConfigureAwait(false);
-                using var s2 = liveimage2.OpenReadStream();
-                ByteString image2 = await ByteString.FromStreamAsync(s2).ConfigureAwait(false);
+                using MemoryStream liveStream1 = new();
+                using MemoryStream liveStream2 = new();
+
+                // Check if first live image raw data is available
+                if (liveimage1 != null) await liveimage1.CopyToAsync(liveStream1).ConfigureAwait(false);
+
+                // Check if second live image raw data is available
+                if (liveimage2 != null) await liveimage2.CopyToAsync(liveStream2).ConfigureAwait(false);
+
+                ByteString image1 = ByteString.CopyFrom(liveStream1.ToArray());
+                ByteString image2 = ByteString.CopyFrom(liveStream2.ToArray());
+
                 if (image1 == null || image2 == null)
                 {
                     return Partial("_LivenessDetectionResult", new LivenessDetectionResultModel { ErrorString = "At least one image was not uploaded completely!" });

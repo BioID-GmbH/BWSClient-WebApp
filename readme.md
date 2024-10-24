@@ -4,8 +4,9 @@
 The **BWSClient WebApp** is an ASP.NET-based application featuring a web view that offers three core functionalities: 
 [Liveness Detection][liveness], [Face Deepfake Detection][deepfake] and [PhotoVerify][photoverify].
 
-The webview already includes the functionality to capture images and convert them into binary format,
-which can then be transmitted to our services via the gRPC protocol.
+This web application functions as a web service. The web view includes functionality to capture images from the webcam and
+convert them into byte arrays. These byte arrays are then transmitted to the BWS gRPC service via a gRPC client,
+and the returned results are displayed in the UI.
 
 Feel free to clone the repository and explore the code to better understand the implementation of each feature. Contributions are welcome!
 
@@ -16,6 +17,9 @@ you can do so on our [BioID Playground][playground], where you can get a first i
 - ASP.NET Core 8
 - gRPC
 - C#
+- HTML5 
+- CSS
+- JavaScript
 
 ## Project structure
 - `Properties/`
@@ -32,18 +36,9 @@ We offer a ready-to-use sample web app for Liveness Detection, PhotoVerify, and 
 This sample is built with [.NET 8][dotnet8] and runs on Windows, Linux, and macOS.
 > Please note: PhotoVerify performs a face match between ID photo and selfie in addition to liveness detection.
 
-Download a [development tool][dotnettools] for Windows, Linux or macOS. Use your favorite development environment like Visual Studio,
-Visual Studio Code, Visual Studio for Mac, .NET Core CLI or other .NET Tools.
-Download a [development tool][dotnettools] for Windows, Linux, or macOS. You can use your preferred development environment, such as Visual Studio, Visual Studio Code, Visual Studio for Mac, the .NET Core CLI, or other .NET tools."
+Download a [development tool][dotnettools] for Windows, Linux, or macOS. You can use your preferred development environment,
+such as Visual Studio, Visual Studio Code, Visual Studio for Mac, the .NET Core CLI, or other .NET tools.
 
-
-### How this sample implementation works
-The web based implementation uses HTML5 with pure javascript function (please feel free to **use/copy/modify the code for your needs**).
-For a fast and responsive page layout we use Bootstrap 5. You can also modify or change this for your needs.
-
-This web application functions as a webservice, capturing images from the webcam and converting them into byte arrays. 
-These byte arrays are then transmitted to the BWS gRPC service via a gRPC client,
-and the returned results are displayed in the UI.
 
 > #### Before starting the service, follow these steps.
 > - You need a **BioID Account** with a **confirmed** email address. If you don’t have one [create BioID account][bioidaccountregister].
@@ -85,7 +80,11 @@ The settings file is located in the root folder of the app.
     ```cmd
     dotnet run --project BioID.BWS.WebApp
     ```
- 
+### How it works 
+[Read more](workflow.md)
+
+
+
 [dotnet8]: https://dotnet.microsoft.com/download "Download .NET8"
 [dotnettools]: https://dotnet.microsoft.com/platform/tools ".NET Tools & Editors"
 [bioidaccountregister]: https://account.bioid.com/Account/Register "Register a BioID account" 
