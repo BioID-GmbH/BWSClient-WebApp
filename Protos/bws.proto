@@ -1,5 +1,5 @@
 // Copyright 2024 BioID GmbH.
-// Specification of the BioID Web Service (BWS) API.
+// Specification of the BioID Web Service (BWS) 3 API
 
 syntax = "proto3";
 
@@ -10,9 +10,6 @@ option csharp_namespace = "BioID.Services";
 
 // BioID Web Service definition.
 service BioIDWebService {
-    // enhanced quality checks according to ISO/IEC 29794-5:2022 and ICAO Doc 9303
-    //rpc QualityAssessment (QualityAssessmentRequest) returns (QualityAssessmentResponse);
-
     // Liveness-detection API
     // - 1 image: passive liveness detection only
     // - 2 images: passive and active liveness detection
@@ -22,18 +19,6 @@ service BioIDWebService {
     rpc VideoLivenessDetection (VideoLivenessDetectionRequest) returns (LivenessDetectionResponse);
     // Photo-verification API
     rpc PhotoVerify (PhotoVerifyRequest) returns (PhotoVerifyResponse);
-
-    // TODO when we have template management specified
-    // enrollment of a user (BCID) with one or more images
-    //rpc Enrollment (EnrollmentRequest) returns (EnrollmentResponse);
-    // returns thumbs of enrolled user images (if available)
-    //rpc GetEnrollmentStatus (EnrollmentStatusRequest) returns (EnrollmentStatusResponse);
-    // one to one verification of a enrolled user (BCID) with one or more images
-    //rpc Verification (VerificationRequest) returns (VerificationResponse);
-    // a range of users can be arranged in closed identification sets
-    //rpc DefineIdentificationSet (DefineIdentificationSetRequest) returns (DefineIdentificationSetResponse);
-    // perform one to many identification of one or more images in predefined identification set
-    //rpc Identification (IdentificationRequest) returns (IdentificationResponse);
 }
 
 // Liveness detection input images.
@@ -98,13 +83,13 @@ message PhotoVerifyResponse {
         NOT_RECOGNIZED = 0;
         // Worst accuracy level that correlates with a FAR of 0.5%
         LEVEL_1 = 1;
-        // Bad accuracy level that correlates with a FAR of 0.25%
+        // Bad accuracy level that correlates with a FAR of 0.1%
         LEVEL_2 = 2;
-        // Not so good accuracy level that correlates with a FAR of 0.1%
+        // Not so good accuracy level that correlates with a FAR of 0.01%
         LEVEL_3 = 3;
-        // Good accuracy level that correlates with a FAR of 0.01%
+        // Good accuracy level that correlates with a FAR of 0.001%
         LEVEL_4 = 4;
-        // Best accuracy level that correlates with a FAR of 0.001%
+        // Best accuracy level that correlates with a FAR of 0.0001%
         LEVEL_5 = 5;
     }
 }
@@ -154,8 +139,8 @@ message ImageProperties {
 message QualityAssessment {
     // The quality check performed.
     string check = 1;
-    // The outcome of the quality check. A score in the range [0.0, 1.0].
-    // The higher the value, the better the check was passed.
+    // The outcome of the quality check. A score int the range [0.0, 1.0].
+    // The higher the value, the better the check was passed. 
     double score = 2;
     // A text with additional info about this quality assessment.
     string message = 3;
