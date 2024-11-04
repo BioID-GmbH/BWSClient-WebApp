@@ -1,17 +1,16 @@
-﻿# BWSClient WebApp 
+﻿# BWSClient WebApp for BioID Web Service 3
 
 ## Overview
-The **BWSClient WebApp** is an ASP.NET-based application featuring a web view that offers three core functionalities: 
+The **BWSClient WebApp** is an ASP.NET Web application and demonstrates the functionality of
 [Liveness Detection][liveness], [Face Deepfake Detection][deepfake] and [PhotoVerify][photoverify].
 
-This web application functions as a web service. The web view includes functionality to capture images from the webcam and
-convert them into byte arrays. These byte arrays are then transmitted to the BWS gRPC service via a gRPC client,
+The web app captures images from the webcam and convert them into byte arrays. These byte arrays are then transmitted to the BWS gRPC service via a gRPC client,
 and the returned results are displayed in the UI.
 
 Feel free to clone the repository and explore the code to better understand the implementation of each feature. Contributions are welcome!
 
-If you're curious about the functionalities mentioned above and would like to explore the app without needing to install it,
-you can do so on our [BioID Playground][playground], where you can get a first impression of how our services operate.
+If you're curious about the functionalities mentioned above and would like to explore the app without needing to build it,
+you can do so on our [BioID Playground][playground], where you can get a first impression of how our biometric services work.
 
 ## Technologies
 - ASP.NET Core 8
@@ -41,15 +40,14 @@ such as Visual Studio, Visual Studio Code, Visual Studio for Mac, the .NET Core 
 
 
 > #### Before starting the service, follow these steps.
-> - You need a **BioID Account** with a **confirmed** email address. If you don’t have one [create BioID account][bioidaccountregister].
-> - You can request a free [trial instance][trial] of the BioID Web Service (BWS) once you've created your BioID account.
-> - Once you have received your trial access, log in to the [BWS Portal][bwsportal].
-> - After logging in to the BWS portal, you will be given a trial subscription to bws. You should then create your own bws client
->  to communicate with the bws service.  The client can be created using a creation wizard.
->  - If you have created a Client, click on `Show Client Key` to open the dialog box that displays the `ClientId` and `Secret` for your Client.
->
->  **The ClientId and Secret will be explained in detail later on where to insert them.** 
- 
+> - You need a **BioID Account** with a **confirmed** email address. If you don’t have one, [create a BioID account][bioidaccountregister].
+> - You can create a free [trial subscription][trial] of the BioID Web Service (BWS) once you've created your BioID account.
+> - After you have signed in to the BWS Portal and created the trial subscription with the help of a wizard, you still need to create a BWS 3 client.
+> - The client can be created with the help of a creation wizard.
+> - If you have created a client, click on `Show client keys` to open the dialog box that displays the `ClientId` and `Keys` for your client.
+
+>  **The ClientId and Key will be explained in detail later on where to insert them.** 
+  
 
 ### Installation
   
@@ -63,12 +61,12 @@ such as Visual Studio, Visual Studio Code, Visual Studio for Mac, the .NET Core 
     dotnet restore
     ```
 
-3. Add your BWS gRPC client ID and secret key to the `appsettings.json` file so that you can communicate with our BWS.
+3. Add your BWS gRPC clientId and access key to the `appsettings.json` file so that you can communicate with our BWS.
 Instructions on where to obtain these are provided above.
 The settings file is located in the root folder of the app.
 
 
-![gRPC client ID and secret key](/bwsSettings.png)
+![gRPC endpoint, client Id and access key](/bwsSettings.png)
 
 
 4. Build the app for your target platform. Insert your target platform without `< >` symbol.
@@ -88,7 +86,7 @@ The settings file is located in the root folder of the app.
 [dotnet8]: https://dotnet.microsoft.com/download "Download .NET8"
 [dotnettools]: https://dotnet.microsoft.com/platform/tools ".NET Tools & Editors"
 [bioidaccountregister]: https://account.bioid.com/Account/Register "Register a BioID account" 
-[trial]: https://bwsportal.bioid.com/register "Register for a trial instance"
+[trial]: https://bwsportal.bioid.com/ "Create a free trial subscription"
 [bwsportal]: https://bwsportal.bioid.com "BWS Portal"
 [liveness]: https://www.bioid.com/liveness-detection/ "Presentation attack detection."
 [photoverify]: https://www.bioid.com/identity-verification-photoverify/ "PhotoVerify"
