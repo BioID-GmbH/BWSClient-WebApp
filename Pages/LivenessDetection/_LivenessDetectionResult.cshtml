@@ -48,7 +48,7 @@ else
 {
     <small>BWS Liveness Detection result:</small>
     <h4 class="text-danger">This was fake!</h4>
-    @foreach (var hint in Model.ResultHints) { <div class="text-danger">@hint</div> }
+    @foreach (var hint in Model.ErrorMessages) { <div class="text-danger">@hint</div> }
     <div class="my-2">
         You were wrongly classified as fake?<br />
         <a href="#" data-bs-toggle="modal" data-bs-target="#howItWorks">See instruction</a>

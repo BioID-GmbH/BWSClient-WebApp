@@ -28,9 +28,5 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
         /// Image properties as calculated for the second image.
         /// </summary>
         public string ImageProperties2 { get; set; } = string.Empty;
-        /// <summary>
-        /// Hint messages generated from the error codes.
-        /// </summary>
-        public List<string> ResultHints { get; set; } = [];
     }
 }

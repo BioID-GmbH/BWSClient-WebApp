@@ -1,5 +1,4 @@
-﻿using BioID.BWS.WebApp.Helper;
-using BioID.Services;
+﻿using BioID.Services;
 using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +44,7 @@ namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
                         Live = response.Live,
                         Fake = response.Errors.Any(e => e.ErrorCode == "RejectedByPassiveLiveDetection"),
                         LivenessScore = Math.Round(response.LivenessScore, 5),
-                        ErrorMessages = response.Errors.Select(e => e.Message).ToList(),
+                        ErrorMessages = response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message).ToList(),
                         ResponseJson = json,
                         FileName = imageFile.FileName,
                         MediaType = "image"
@@ -74,7 +73,7 @@ namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
                         Live = response.Live,
                         Fake = response.Errors.Any(e => e.ErrorCode == "RejectedByPassiveLiveDetection"),
                         LivenessScore = Math.Round(response.LivenessScore, 5),
-                        ErrorMessages = response.Errors.Select(e => e.Message).ToList(),
+                        ErrorMessages = response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message).ToList(),
                         ResponseJson = json,
                         FileName = videoFile.FileName,
                         MediaType = "video"

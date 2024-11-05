@@ -178,39 +178,6 @@
             document.getElementById('capture').addEventListener('click', capture);
             document.getElementById('execute').addEventListener('click', execute);
 
-            /*
-            window.addEventListener('blur', () => {
-                console.log('we lost the focus (paused, ended, error, stream):', video.paused, video.ended, video.error, video.srcObject);
-            });
-
-            window.addEventListener('focus', () => {
-                console.log('we got the focus (paused, ended, error, stream):', video.paused, video.ended, video.error, video.srcObject);
-                if (video.paused) {
-                    console.log('re-starting camera playback ...');
-                    video.play();
-                }
-            });
-
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    console.log('we are hidden now');
-                } else {
-                    console.log('we are visible again');
-                    if (video.paused) {
-                        console.log('re-starting camera playback ...');
-                        video.play();
-                    }
-                }
-            });
-
-            video.addEventListener('pause', () => { console.log('video paused'); });
-            video.addEventListener('play', () => { console.log('video playing'); });
-            video.addEventListener('abort', () => { console.log('video aborted'); });
-            video.addEventListener('error', () => { console.log('video error: ', video.error); });
-            video.addEventListener('stalled', () => { console.log('video stalled'); });
-            video.addEventListener('suspend', () => { console.log('video suspended'); });
-            */
-
             startVideo(video, initCanvases);
         });
 
@@ -345,11 +312,6 @@
                     document.getElementById('image2').title = document.getElementById('imageProperties2').innerHTML;
                     document.getElementById('hover-hint').style.display = "inline-block";
 
-                    let note = document.getElementById('privacynote');
-                    if (note) { new bootstrap.Popover(note); }
-                    let m = document.getElementById('mismatch');
-                    if (m) { m.addEventListener('click', mismatch); }
-
                     let resultModal = new bootstrap.Modal(document.getElementById('operationResult'));
                     resultModal.show();
                 } else {
@@ -359,13 +321,5 @@
                 enableProcess();
             }
         };
-
-        function mismatch(event) {
-            let xhttp = new XMLHttpRequest();
-            xhttp.open("GET", "/PhotoVerify/Mismatch?id=" + event.target.dataset.id, true);
-            xhttp.send();
-            document.getElementById('mismatchdiv').innerHTML = "<strong>Thank you for your help.</strong>";
-        }
-
     </script>
 }

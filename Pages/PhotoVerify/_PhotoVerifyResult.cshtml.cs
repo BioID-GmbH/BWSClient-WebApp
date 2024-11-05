@@ -40,9 +40,5 @@ namespace BioID.BWS.WebApp.Pages.PhotoVerify
         /// Errors reported from the photo-verify call.
         /// </summary>
         public List<string> ErrorMessages { get; set; } = [];
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Id { get; set; } = string.Empty;
     }
 }

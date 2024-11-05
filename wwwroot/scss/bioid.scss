@@ -87,34 +87,6 @@ main {
         background-color: $bioid-blue;
         border-color: $bioid-blue;
     }
-
-    &.btn-nav1 {
-        top: 8rem;
-    }
-
-    &.btn-nav2 {
-        top: 15rem;
-    }
-
-    &.btn-nav3 {
-        top: 22rem;
-    }
-}
-
-.scrollToTopBtn {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    z-index: 100;
-    opacity: 0;
-    transform: translateY(100px);
-    transition: all .8s ease;
-    padding: 0.5rem;
-}
-
-.showBtn {
-    opacity: 1;
-    transform: translateY(0)
 }
 
 .demo {
@@ -137,14 +109,6 @@ main {
         margin-top: auto
     }
 }
-
-.row-gray1 {
-    background-color: $gray-100;
-}
-.row-gray2 {
-    background-color: $gray-200;
-}
-
 
 .btn-close-tr {
     position: absolute;
@@ -177,16 +141,6 @@ main {
     border-radius: 1.5rem;
     font-size: 2rem;
     background: rgba(255, 255, 255, 0.50);
-}
-
-.align-center-fill {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    button:last-child, a:last-child {
-        margin-top: auto
-    }
 }
 
 // rotates a expand/collapse chevron

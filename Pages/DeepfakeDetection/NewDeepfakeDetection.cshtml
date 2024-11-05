@@ -175,10 +175,6 @@
                 if (xhr.status == 200) {
                     let resultView = document.getElementById('result-view');
                     resultView.innerHTML = this.responseText;
-                    let note = document.getElementById('privacynote');
-                    if (note) { new bootstrap.Popover(note); }
-                    let refuse = document.getElementById('refuse');
-                    if (refuse) { refuse.addEventListener('click', mismatch); }
                 } else {
                     alert('There was an error processing the AJAX request: ' + xhr.responseText);
                 }

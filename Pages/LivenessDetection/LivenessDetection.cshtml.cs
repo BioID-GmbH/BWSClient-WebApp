@@ -1,5 +1,4 @@
-﻿using BioID.BWS.WebApp.Helper;
-using BioID.Services;
+﻿using BioID.Services;
 using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +13,7 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
         private readonly BioIDWebService.BioIDWebServiceClient _bws = bwsServiceClient;
         private static readonly JsonSerializerOptions _serializerOptions = new() { WriteIndented = true };
 
-        public string ErrorString { get; set; }
+        public string ErrorString { get; set; } = string.Empty;
 
         // ajax-call (with antiforgery)
         public async Task<IActionResult> OnPostAsync()
@@ -54,19 +53,10 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
                 {
                     Live = response.Live,
                     LivenessScore = Math.Round(response.LivenessScore, 5),
-                    ErrorMessages = response.Errors.Count != 0 ? response.Errors.Select(e => e.Message).Distinct().ToList() : []
+                    ErrorMessages = response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message).ToList()
                 };
                 if (response.ImageProperties.Count > 0) { result.ImageProperties1 = JsonSerializer.Serialize(response.ImageProperties[0], _serializerOptions); }
                 if (response.ImageProperties.Count > 1) { result.ImageProperties2 = JsonSerializer.Serialize(response.ImageProperties[1], _serializerOptions); }
-                foreach (var error in response.Errors.Select(e => e.ErrorCode).Distinct())
-                {
-                    string hint = error.HintFromResult();
-                    if (!string.IsNullOrEmpty(hint))
-                    {
-                        result.ResultHints.Add(hint);
-                    }
-                }
-
                 return Partial("_LivenessDetectionResult", result);
             }
             catch (RpcException ex)

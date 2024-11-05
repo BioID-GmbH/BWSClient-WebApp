@@ -12008,31 +12008,6 @@ main > .container-fluid, main > .container-sm, main > .container-md, main > .con
   background-color: #5f7ab0;
   border-color: #5f7ab0;
 }
-.btn-nav.btn-nav1 {
-  top: 8rem;
-}
-.btn-nav.btn-nav2 {
-  top: 15rem;
-}
-.btn-nav.btn-nav3 {
-  top: 22rem;
-}
-
-.scrollToTopBtn {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  z-index: 100;
-  opacity: 0;
-  transform: translateY(100px);
-  transition: all 0.8s ease;
-  padding: 0.5rem;
-}
-
-.showBtn {
-  opacity: 1;
-  transform: translateY(0);
-}
 
 .demo {
   padding-top: 2rem;
@@ -12050,14 +12025,6 @@ main > .container-fluid, main > .container-sm, main > .container-md, main > .con
 }
 .demo button:last-child, .demo a:last-child {
   margin-top: auto;
-}
-
-.row-gray1 {
-  background-color: #f8f9fa;
-}
-
-.row-gray2 {
-  background-color: #e9ecef;
 }
 
 .btn-close-tr {
@@ -12089,15 +12056,6 @@ main > .container-fluid, main > .container-sm, main > .container-md, main > .con
   border-radius: 1.5rem;
   font-size: 2rem;
   background: rgba(255, 255, 255, 0.5);
-}
-
-.align-center-fill {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.align-center-fill button:last-child, .align-center-fill a:last-child {
-  margin-top: auto;
 }
 
 [data-bs-toggle=collapse] .bi-up-down {

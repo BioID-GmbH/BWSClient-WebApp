@@ -56,15 +56,11 @@ namespace BioID.BWS.WebApp.Pages.PhotoVerify
                     LivenessScore = Math.Round(response.LivenessScore, 5),
                     Accuracy = (int)response.VerificationLevel,
                     VerificationScore = Math.Round(response.VerificationScore, 5),
-                    Id = id,
-                    PhotoProperties = JsonSerializer.Serialize(response.PhotoProperties, _serializerOptions)
+                    PhotoProperties = JsonSerializer.Serialize(response.PhotoProperties, _serializerOptions),
+                    ErrorMessages = response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message).ToList()
                 };
                 if (response.ImageProperties.Count > 0) { result.ImageProperties1 = JsonSerializer.Serialize(response.ImageProperties[0], _serializerOptions); }
                 if (response.ImageProperties.Count > 1) { result.ImageProperties2 = JsonSerializer.Serialize(response.ImageProperties[1], _serializerOptions); }
-                foreach (var error in response.Errors.Select(e => e.Message).Distinct())
-                {
-                    result.ErrorMessages.Add(error);
-                }
 
                 return Partial("_PhotoVerifyResult", result);
             }
