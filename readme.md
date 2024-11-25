@@ -56,23 +56,21 @@ such as Visual Studio, Visual Studio Code, Visual Studio for Mac, the .NET Core 
     git clone https://github.com/BioID-GmbH/BWSClient-WebApp.git
     ```
 
-2. Navigate to the project folder and install the dependencies.
+2. Change the current directory to the BWSClient-WebApp folder
+   ```cmd
+    cd BWSClient-WebApp
+    ```
+3. Navigate to the project folder and install the dependencies.
     ```cmd
     dotnet restore
     ```
 
-3. Add your BWS gRPC clientId and access key to the `appsettings.json` file so that you can communicate with our BWS.
+4. Add your BWS gRPC clientId and access key to the `appsettings.json` file so that you can communicate with our BWS.
 Instructions on where to obtain these are provided above.
 The settings file is located in the root folder of the app.
 
 
 ![gRPC endpoint, client Id and access key](/bwsSettings.png)
-
-
-4. Build the app for your target platform. Insert your target platform without `< >` symbol.
-    ```cmd
-   dotnet build --configuration Release <target platform> --self-contained true
-   ```
 
 5. Launch the application.
     ```cmd
