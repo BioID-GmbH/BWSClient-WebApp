@@ -14,11 +14,11 @@ More details about each feature are explained below.
 ## The workflow for Liveness Detection
 
 1. Access the webcam by requesting permission from the user.
-2. Once you have obtained permission, capturing of live webcam images begins.
-3. By pressing the button, the app captures a total of two images. The first image is taken immediately upon pressing the button,
-while the BioID Motion Detection automatically detects the required movement and triggers the capture of the second image.
-4. After both images are captured, the uploading process begins.
-5. Upon successful upload, the web server calls the [BioID Web Service (BWS)][bwsreference] and returns the result to the client.
+2. Once you have obtained permission, capturing of live webcam images begins.           
+3. Active liveness detection is enabled by default. You can use the checkbox to choose between active or passive liveness detection.   
+   * If active liveness detection is selected, the app captures two images in total. The first image is taken immediately upon pressing the button, and the BioID Motion Detection automatically detects the required movement to trigger the capture of the second image. After both images are captured, the upload process begins.
+   * If passive liveness detection is selected, only one image is captured immediately upon pressing the button, as no additional movement is required. Once the image is captured, the uploading process begins.
+4. Upon successful upload, the web server calls the [BioID Web Service (BWS)][bwsreference] and returns the result to the client.
 
 ## The workflow for PhotoVerify
 
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
                else { howtovideo.pause(); }
            });
            document.getElementById('closehowtovideo').addEventListener('click', () => { document.getElementById('howtovideodiv').remove(); });
- 
+           document.getElementById('toggleActivePassive').addEventListener('click', toggleLivenessDetection);
            startVideo(video, initCanvases);
        });
 ```
@@ -115,7 +115,7 @@ function initCanvases(videoElement, mediaStream) {
 
 The processFrame function is called for every grabbed frame.
 For each incoming image the motion is analysed compared to the first image. The activation of the motion detection starts by clicking the capture button.
-The implementation of the BioID Motion Detection is implemented in the _ideoCapture.js_.
+The implementation of the BioID Motion Detection is implemented in the _videoCapture.js_.
 
 ```js
 function processFrame() {
@@ -140,10 +140,15 @@ function processFrame() {
                         console.log('captured second image');
                     }
                 } else {
-                    // use as template
-                    template = createTemplate(currentImageData);
                     // capture the current image
-                    drawingCanvas.toBlob(setImage1)
+                    if (activeLivenessDetection) {
+                        drawingCanvas.toBlob(setImage1)
+                        // use as template
+                        template = createTemplate(currentImageData);
+                    } else {
+                        capturing = false;
+                        drawingCanvas.toBlob(sendImage1)
+                    }
                     console.log('captured first image');
                 }
             }
@@ -156,7 +161,6 @@ function processFrame() {
             ctx.rect(0, 0, w, h);
             ctx.fillStyle = 'rgba(220, 220, 220, 0.8)';
             ctx.fill('evenodd');
-        }
 ```
 
 > #### UX
@@ -185,10 +189,10 @@ Please use our code as it is to achieve the best result for the liveness detecti
 
 We offer the function _isMobileDevice_() (wwwroot/js/site.js) to detect, if the javascript is running on a mobile device or not.
 
-### Start Capturing of 2 images and call BWS Liveness Detection
+### Start Capturing of 2 images and call BWS Active Liveness Detection
 If the user presses the capture button the capture function is called and the capture state (boolean) is true. The processFrame function processes the live video stream and activates the motion detection analyzation with the capture state.
 
-If the motion reaches the threshold the second image is uploading and the capture process and motion detection stops. Both images are uploaded inside a form as blob data. Take a look at_toBlob_ function.
+If the motion reaches the threshold the second image is uploading and the capture process and motion detection stops. Both images are uploaded inside a form as blob data. Take a look at _toBlob_ function.
 
 ```js
 function sendImages() {
@@ -197,7 +201,7 @@ function sendImages() {
 
             var formData = new FormData(document.getElementById('capture-form'));
             formData.append('image1', firstCapturedImage);
-            formData.append('image2', secondCapturedImage);
+            if (secondCapturedImage != null) { formData.append('image2', secondCapturedImage); }
             formData.append('isMobile', isMobileDevice().toString());
             xhr.open("POST", "/LivenessDetection");
             xhr.send(formData);
@@ -209,23 +213,24 @@ function sendImages() {
 ```c#
 // _bws is a BioID Web Service gRPC client that is already configured in Program.cs
 var liveimage1 = Request.Form.Files["image1"];
+if (liveimage1 == null)
+{
+    return Partial("_LivenessDetectionResult", new LivenessDetectionResultModel { ErrorString = "At least one image is required for liveness detection!" });
+}
+
+using var s1 = liveimage1.OpenReadStream();
+ByteString image1 = await ByteString.FromStreamAsync(s1).ConfigureAwait(false);
+ByteString? image2 = null;
 var liveimage2 = Request.Form.Files["image2"];
-
-using MemoryStream liveSteram1 = new();
-using MemoryStream liveStream2 = new();
-
-// Check if first live image raw data is available
-if (liveimage1 != null) await liveimage1.CopyToAsync(liveSteram1).ConfigureAwait(false);
-
-// Check if second live image raw data is available
-if (liveimage2 != null) await liveimage2.CopyToAsync(liveStream2).ConfigureAwait(false);
-
-ByteString image1 = ByteString.CopyFrom(liveSteram1.ToArray());
-ByteString image2 = ByteString.CopyFrom(liveStream2.ToArray());
+if (liveimage2 != null)
+{
+    using var s2 = liveimage2.OpenReadStream();
+    image2 = await ByteString.FromStreamAsync(s2).ConfigureAwait(false);
+}
 
 var livenessRequest = new LivenessDetectionRequest();
 livenessRequest.LiveImages.Add(new ImageData() { Image = image1 });
-livenessRequest.LiveImages.Add(new ImageData() { Image = image2 });
+if (image2 != null) { livenessRequest.LiveImages.Add(new ImageData() { Image = image2 }); }
 
 var livenessCall = _bws.LivenessDetectionAsync(livenessRequest, new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
 var response = await livenessCall.ResponseAsync.ConfigureAwait(false);

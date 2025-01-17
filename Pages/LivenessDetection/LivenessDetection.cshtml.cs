@@ -21,28 +21,24 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
             try
             {
                 var liveimage1 = Request.Form.Files["image1"];
-                var liveimage2 = Request.Form.Files["image2"];
-
-                using MemoryStream liveStream1 = new();
-                using MemoryStream liveStream2 = new();
-
-                // Check if first live image raw data is available
-                if (liveimage1 != null) await liveimage1.CopyToAsync(liveStream1).ConfigureAwait(false);
-
-                // Check if second live image raw data is available
-                if (liveimage2 != null) await liveimage2.CopyToAsync(liveStream2).ConfigureAwait(false);
-
-                ByteString image1 = ByteString.CopyFrom(liveStream1.ToArray());
-                ByteString image2 = ByteString.CopyFrom(liveStream2.ToArray());
-
-                if (image1 == null || image2 == null)
+                if (liveimage1 == null)
                 {
-                    return Partial("_LivenessDetectionResult", new LivenessDetectionResultModel { ErrorString = "At least one image was not uploaded completely!" });
+                    return Partial("_LivenessDetectionResult", new LivenessDetectionResultModel { ErrorString = "At least one image is required for liveness detection!" });
+                }
+
+                using var s1 = liveimage1.OpenReadStream();
+                ByteString image1 = await ByteString.FromStreamAsync(s1).ConfigureAwait(false);
+                ByteString? image2 = null;
+                var liveimage2 = Request.Form.Files["image2"];
+                if (liveimage2 != null)
+                {
+                    using var s2 = liveimage2.OpenReadStream();
+                    image2 = await ByteString.FromStreamAsync(s2).ConfigureAwait(false);
                 }
 
                 var livenessRequest = new LivenessDetectionRequest();
                 livenessRequest.LiveImages.Add(new ImageData() { Image = image1 });
-                livenessRequest.LiveImages.Add(new ImageData() { Image = image2 });
+                if (image2 != null) { livenessRequest.LiveImages.Add(new ImageData() { Image = image2 }); }
 
                 var livenessCall = _bws.LivenessDetectionAsync(livenessRequest, new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
                 var response = await livenessCall.ResponseAsync.ConfigureAwait(false);
@@ -51,12 +47,14 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
 
                 var result = new LivenessDetectionResultModel()
                 {
+                    Active = liveimage2 != null,
                     Live = response.Live,
                     LivenessScore = Math.Round(response.LivenessScore, 5),
                     ErrorMessages = response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message).ToList()
                 };
                 if (response.ImageProperties.Count > 0) { result.ImageProperties1 = JsonSerializer.Serialize(response.ImageProperties[0], _serializerOptions); }
                 if (response.ImageProperties.Count > 1) { result.ImageProperties2 = JsonSerializer.Serialize(response.ImageProperties[1], _serializerOptions); }
+                result.ResultHints = response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message).ToList();
                 return Partial("_LivenessDetectionResult", result);
             }
             catch (RpcException ex)

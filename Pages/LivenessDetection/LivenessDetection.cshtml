@@ -15,6 +15,9 @@
             Just start the operation to capture the first image, then simply nod your head a bit to capture the second image.
         </p>
         <p>
+            Alternatively you can perform a simple passive liveness detection by just sending a single selfie.
+        </p>
+        <p>
             This application uses our <strong>new BWS 3</strong> <a href="https://developer.bioid.com/bws/grpc/livenessdetection" target="_blank" rel="noopener">LivenessDetection API</a>.
         </p>
         <div class="d-flex justify-content-center" id="howtovideodiv">
@@ -38,7 +41,19 @@
 
 <div class="row mb-5">
     <div class="col-12 offset-sm-1 col-sm-10 offset-md-2 col-md-8 offset-lg-3 col-lg-6 offset-xxl-4 col-xxl-4">
-        <h4>One click &ndash; two selfies</h4>
+        <h4 id="operationHeading">One click &ndash; two selfies</h4>
+
+        <div class="row">
+            <div class="offset-6 col-6">
+                <div class="form-check form-switch text-start">
+                    <div>
+                        <input type="checkbox" class="form-check-input" id="toggleActivePassive" checked />
+                        <label class="form-check-label" for="toggleActivePassive" id="toggleActivePassiveLabel">Active liveness detection</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mb-5">
             <div class="col-6">
                 <div class="d-flex justify-content-center">
@@ -55,11 +70,11 @@
                 }
                 <div class="w-100">
                     <div class="row">
-                        <div class="col-6">
+                        <div id="selfie1" class="col-6">
                             <div>SELFIE 1</div>
                             <img class="border img-fluid w-100" id="image1" src="~/images/bg-placeholder.svg">
                         </div>
-                        <div class="col-6">
+                        <div id="selfie2" class="col-6">
                             <div>SELFIE 2</div>
                             <img class="border img-fluid w-100" id="image2" src="~/images/bg-placeholder.svg">
                         </div>
@@ -86,6 +101,7 @@
     <script type="text/javascript">
         const motionAreaHeight = 160;
         const motionThreshold = isMobileDevice() ? 50 : 25;
+        var activeLivenessDetection = true;
         var template = null;
         var capturing = false;
         var video = document.createElement('video');
@@ -111,6 +127,8 @@
             });
             document.getElementById('closehowtovideo').addEventListener('click', () => { document.getElementById('howtovideodiv').remove(); });
 
+            document.getElementById('toggleActivePassive').addEventListener('click', toggleLivenessDetection);
+
             startVideo(video, initCanvases);
         });
 
@@ -125,6 +143,7 @@
                 .then((result) => {
                     document.getElementById('result-view').innerHTML = result;
                     console.log(result);
+                    if (!activeLivenessDetection) { document.getElementById("selfie2").style.display = "none"; }
                     document.getElementById('captureSpinner').style.display = "inline-block";
                     capturing = true;
                 });
@@ -173,10 +192,15 @@
                         console.log('captured second image');
                     }
                 } else {
-                    // use as template
-                    template = createTemplate(currentImageData);
                     // capture the current image
-                    drawingCanvas.toBlob(setImage1)
+                    if (activeLivenessDetection) {
+                        drawingCanvas.toBlob(setImage1)
+                        // use as template
+                        template = createTemplate(currentImageData);
+                    } else {
+                        capturing = false;
+                        drawingCanvas.toBlob(sendImage1)
+                    }
                     console.log('captured first image');
                 }
             }
@@ -207,6 +231,10 @@
                 image2.onload = () => { window.URL.revokeObjectURL(this.src); };
             }
         }
+        function sendImage1(blob) {
+            setImage1(blob);
+            setTimeout(sendImages);
+        }
         function handleImage2(blob) {
             setImage2(blob);
             setTimeout(sendImages);
@@ -218,7 +246,7 @@
 
             var formData = new FormData(document.getElementById('capture-form'));
             formData.append('image1', firstCapturedImage);
-            formData.append('image2', secondCapturedImage);
+            if (secondCapturedImage != null) { formData.append('image2', secondCapturedImage); }
             formData.append('isMobile', isMobileDevice().toString());
             xhr.open("POST", "/LivenessDetection");
             xhr.send(formData);
@@ -230,7 +258,8 @@
                     let captureView = document.getElementById('result-view');
                     captureView.innerHTML = this.responseText;
                     setImage1(firstCapturedImage);
-                    setImage2(secondCapturedImage);
+                    if (secondCapturedImage != null) { setImage2(secondCapturedImage); }
+                    else { document.getElementById("selfie2").style.display = "none"; }
                 } else {
                     alert('There was an error processing the AJAX request: ' + xhr.responseText);
                 }
@@ -238,5 +267,18 @@
             }
         };
 
+        function toggleLivenessDetection() {
+            let toggle = document.getElementById('toggleActivePassive');
+            activeLivenessDetection = toggle.checked;
+            if (activeLivenessDetection) {
+                document.getElementById("toggleActivePassiveLabel").innerHTML = "Active liveness detection";
+                document.getElementById("operationHeading").innerHTML = "One click &ndash; two selfies";
+                document.getElementById("selfie2").style.display = "block";
+            } else {
+                document.getElementById("toggleActivePassiveLabel").innerHTML = "Passive liveness detection";
+                document.getElementById("operationHeading").innerHTML = "Take a selfie";
+                document.getElementById("selfie2").style.display = "none";
+            }
+        }
     </script>
 }

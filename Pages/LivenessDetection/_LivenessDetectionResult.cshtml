@@ -30,14 +30,24 @@ else @if (Model.Live)
     }
     <div class="w-100">
         <div class="row">
-            <div class="col-6">
+            <div id="selfie1" class="col-6">
                 <div class="text-success">SELFIE 1</div>
                 <img class="border border-2 border-success img-fluid w-100" id="image1" style="min-height:4rem;" title="@Model.ImageProperties1">
             </div>
-            <div class="col-6">
-                <div class="text-success">SELFIE 2</div>
-                <img class="border border-2 border-success img-fluid w-100" id="image2" style="min-height:4rem;" title="@Model.ImageProperties2">
-            </div>
+            @if (Model.Active)
+            {
+                <div id="selfie2" class="col-6">
+                    <div class="text-success">SELFIE 2</div>
+                    <img class="border border-2 border-success img-fluid w-100" id="image2" style="min-height:4rem;" title="@Model.ImageProperties2">
+                </div>
+            }
+            else
+            {
+                <div id="selfie2" class="col-6">
+                    <div>SELFIE 2</div>
+                    <img class="border img-fluid w-100" id="image2" src="~/images/bg-placeholder.svg">
+                </div>
+            }
             <div class="col-12">
                 <div class="hint">*hover over the selfies for more results</div>
             </div>
@@ -55,14 +65,24 @@ else
     </div>
     <div class="w-100">
         <div class="row">
-            <div class="col-6">
+            <div id="selfie1" class="col-6">
                 <div class="text-danger">SELFIE 1</div>
                 <img class="border border-2 border-danger img-fluid w-100" id="image1" style="min-height:4rem;" title="@Model.ImageProperties1">
             </div>
-            <div class="col-6">
-                <div class="text-danger">SELFIE 2</div>
-                <img class="border border-2 border-danger img-fluid w-100" id="image2" style="min-height:4rem;" title="@Model.ImageProperties2">
-            </div>
+            @if (Model.Active)
+            {
+                <div id="selfie2" class="col-6">
+                    <div class="text-danger">SELFIE 2</div>
+                    <img class="border border-2 border-danger img-fluid w-100" id="image2" style="min-height:4rem;" title="@Model.ImageProperties2">
+                </div>
+            }
+            else
+            {
+                <div id="selfie2" class="col-6">
+                    <div>SELFIE 2</div>
+                    <img class="border img-fluid w-100" id="image2" src="~/images/bg-placeholder.svg">
+                </div>
+            }
             <div class="col-12">
                 <div class="hint">*hover over the selfies for more results</div>
             </div>

@@ -5,9 +5,13 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
     public class LivenessDetectionResultModel : PageModel
     {
         /// <summary>
-        /// This error is only set in case an exception occured.
+        /// This error is only set in case an exception occurred.
         /// </summary>
         public string ErrorString { get; set; } = string.Empty;
+        /// <summary>
+        /// Was it an active or a passive liveness detection.
+        /// </summary>
+        public bool Active { get; set; }
         /// <summary>
         /// Liveness decision.
         /// </summary>
@@ -28,5 +32,9 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
         /// Image properties as calculated for the second image.
         /// </summary>
         public string ImageProperties2 { get; set; } = string.Empty;
+        /// <summary>
+        /// Hint messages generated from the error codes.
+        /// </summary>
+        public List<string> ResultHints { get; set; } = [];
     }
 }
