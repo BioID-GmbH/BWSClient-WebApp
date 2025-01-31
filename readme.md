@@ -1,26 +1,29 @@
-﻿# BWSClient WebApp for BioID Web Service 3
+﻿# BWSClient WebApp - Liveness Detection, Face Deepfake Detection & PhotoVerify using BioID Web Service 3
 
 ## Overview
-The **BWSClient WebApp** is an ASP.NET Web application and demonstrates the functionality of
-[Liveness Detection][liveness], [Face Deepfake Detection][deepfake] and [PhotoVerify][photoverify].
+The **BWSClient WebApp** is an ASP.NET Core Web application that demonstrates key biometric features such as **Liveness Detection**, **Face Deepfake Detection**, and **PhotoVerify** using BioID's Web Service (BWS). This web application captures images from the user's webcam, converts them into byte arrays, and sends them to the **BWS gRPC service** via a gRPC client. The processed results are then displayed in the user interface.
 
 The web app captures images from the webcam and convert them into byte arrays. These byte arrays are then transmitted to the BWS gRPC service via a gRPC client,
 and the returned results are displayed in the UI.
 
-Feel free to clone the repository and explore the code to better understand the implementation of each feature. Contributions are welcome!
+You can explore and clone the repository to better understand the implementation of these biometric features. Contributions to the project are welcome!
 
 If you're curious about the functionalities mentioned above and would like to explore the app without needing to build it,
 you can do so on our [BioID Playground][playground], where you can get a first impression of how our biometric services work.
 
-## Technologies
-- ASP.NET Core 8
-- gRPC
-- C#
-- HTML5 
-- CSS
-- JavaScript
+## Key Features
+- **Liveness Detection**: Ensures the presence of a live person during biometric check.
+- **Face Deepfake Detection**: Identifies whether the face in the image is a deepfake or manipulated.
+- **PhotoVerify**: Matches a selfie with an ID photo while performing liveness checks.
 
-## Project structure
+## Technologies Used
+- **ASP.NET Core 8**: A powerful, cross-platform web framework.
+- **gRPC**: For high-performance communication between the client and the BWS.
+- **C#**: The main programming language for backend development.
+- **HTML5**, **CSS**, **JavaScript**: For front-end development and user interface.
+- **ProtoBuf**: Defines the data structure for communication with gRPC.
+
+## Project Structure
 - `Properties/`
     - `launchsettings.json` - For configuring how the application is launched and debugged during development.
   The port on which the app runs can also be set here.It is only relevant if you start in Visual Studio.
@@ -31,8 +34,8 @@ you can do so on our [BioID Playground][playground], where you can get a first i
 - `Program.cs` - This is the main entry point of the application.
 
 ## Get Started
-We offer a ready-to-use sample web app for Liveness Detection, PhotoVerify, and Face Deepfake Detection.
-This sample is built with [.NET 8][dotnet8] and runs on Windows, Linux, and macOS.
+The **BWSClient WebApp** is ready to use and provides a sample web application built with **.NET 8**. It runs on all major platforms (Windows, Linux, and macOS). Here’s how to get started:
+
 > Please note: PhotoVerify performs a face match between ID photo and selfie in addition to liveness detection.
 
 Download a [development tool][dotnettools] for Windows, Linux, or macOS. You can use your preferred development environment,
@@ -76,9 +79,18 @@ The settings file is located in the root folder of the app.
     ```cmd
     dotnet run --project BioID.BWS.WebApp.csproj
     ```
-### How it works 
+
+### What to Expect
+- After setting up, the app will allow you to capture images through your webcam.
+- These images are sent to the **BWS gRPC service**, which processes them for **Liveness Detection, Face Deepfake Detection**, and **PhotoVerify**.
+- The results are then displayed on the user interface, showing the status of the biometric check.
+
+### How it Works in Detail 
 [Read more](workflow.md)
 
+### Need Help?
+- Check out the [BioID Playground][playground] to see how the features work in real-time without building the app.
+- Explore the [BioID Documentation][developerdocu] for more detailed information on using the BWS API.
 
 
 [dotnet8]: https://dotnet.microsoft.com/download "Download .NET8"
@@ -90,5 +102,6 @@ The settings file is located in the root folder of the app.
 [photoverify]: https://www.bioid.com/identity-verification-photoverify/ "PhotoVerify"
 [deepfake]: https://www.bioid.com/deepfake-detection/ "Face DeeepFake Detection"
 [playground]: https://playground.bioid.com "BioID Playground"
+[developerdocu]: https://developer.bioid.com/BWS/NewBws "BioID Developer"
 
 
