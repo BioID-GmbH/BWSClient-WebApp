@@ -183,7 +183,7 @@ If the image capturing is activated, the first image is taken immediately. The s
 Please use our code as it is to achieve the best result for the liveness detection.
 
 > #### UX
-> Our experience for this motion detection threshold is the default setting. In general we differentiate static camera (PC/Laptop) from mobile camera. With a mobile camera you get additional movement from holding the device. To avoid accidential image triggering, the threshold for mobile devices is higher.
+> Our experience for this motion detection threshold is the default setting. In general we differentiate static camera (PC/Laptop) from mobile camera. With a mobile camera you get additional movement from holding the device. To avoid accidental image triggering, the threshold for mobile devices is higher.
 
 `const motionThreshold = isMobileDevice() ? 50 : 20;`
 
