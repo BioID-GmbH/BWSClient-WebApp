@@ -50,11 +50,11 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
                     Active = liveimage2 != null,
                     Live = response.Live,
                     LivenessScore = Math.Round(response.LivenessScore, 5),
-                    ErrorMessages = response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message).ToList()
+                    ErrorMessages = [.. response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message)]
                 };
                 if (response.ImageProperties.Count > 0) { result.ImageProperties1 = JsonSerializer.Serialize(response.ImageProperties[0], _serializerOptions); }
                 if (response.ImageProperties.Count > 1) { result.ImageProperties2 = JsonSerializer.Serialize(response.ImageProperties[1], _serializerOptions); }
-                result.ResultHints = response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message).ToList();
+                result.ResultHints = [.. response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message)];
                 return Partial("_LivenessDetectionResult", result);
             }
             catch (RpcException ex)

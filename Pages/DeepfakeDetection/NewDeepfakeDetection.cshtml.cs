@@ -44,7 +44,7 @@ namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
                         Live = response.Live,
                         Fake = response.Errors.Any(e => e.ErrorCode == "RejectedByPassiveLiveDetection"),
                         LivenessScore = Math.Round(response.LivenessScore, 5),
-                        ErrorMessages = response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message).ToList(),
+                        ErrorMessages = [.. response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message)],
                         ResponseJson = json,
                         FileName = imageFile.FileName,
                         MediaType = "image"
@@ -73,7 +73,7 @@ namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
                         Live = response.Live,
                         Fake = response.Errors.Any(e => e.ErrorCode == "RejectedByPassiveLiveDetection"),
                         LivenessScore = Math.Round(response.LivenessScore, 5),
-                        ErrorMessages = response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message).ToList(),
+                        ErrorMessages = [.. response.Errors.DistinctBy(e => e.ErrorCode).Select(e => e.Message)],
                         ResponseJson = json,
                         FileName = videoFile.FileName,
                         MediaType = "video"
