@@ -163,7 +163,7 @@
             drawingCanvas.title = `Capturing ${videoElement.videoWidth}x${videoElement.videoHeight}px (cropped to ${drawingCanvas.width}x${drawingCanvas.height}) from ${mediaStream.getVideoTracks()[0].label}.`
 
             // mirror live preview
-            let ctx = drawingCanvas.getContext('2d');
+            let ctx = drawingCanvas.getContext('2d', { willReadFrequently: true });
             ctx.translate(drawingCanvas.width, 0);
             ctx.scale(-1, 1);
             // set an interval-timer to grab about 20 frames per second
@@ -173,12 +173,12 @@
         function processFrame() {
             let w = drawingCanvas.width, h = drawingCanvas.height, aspectratio = w / h;
             let cutoff = video.videoWidth - (video.videoHeight * aspectratio);
-            let ctx = drawingCanvas.getContext('2d');
+            let ctx = drawingCanvas.getContext('2d', { willReadFrequently: true });
             ctx.drawImage(video, cutoff / 2, 0, video.videoWidth - cutoff, video.videoHeight, 0, 0, w, h);
 
             if (capturing) {
                 // scale current image into the motion canvas
-                let motionctx = motionCanvas.getContext('2d');
+                let motionctx = motionCanvas.getContext('2d', { willReadFrequently: true });
                 motionctx.drawImage(drawingCanvas, w / 8, h / 8, w - w / 4, h - h / 4, 0, 0, motionCanvas.width, motionCanvas.height);
                 let currentImageData = motionctx.getImageData(0, 0, motionCanvas.width, motionCanvas.height);
 
