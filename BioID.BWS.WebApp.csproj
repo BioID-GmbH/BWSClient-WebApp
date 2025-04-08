@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <None Remove="Protos\bws.proto" />
+    <None Remove="Protos\bwsmessages.proto" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,11 +29,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.3" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.7.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.8.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Protobuf Include="Protos\bws.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\bwsmessages.proto" GrpcServices="None" />
   </ItemGroup>
 
 </Project>
