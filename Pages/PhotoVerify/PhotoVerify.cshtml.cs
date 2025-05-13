@@ -1,12 +1,12 @@
-﻿using BioID.Services;
-using Google.Protobuf;
-using Grpc.Core;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Text.Json;
-
-namespace BioID.BWS.WebApp.Pages.PhotoVerify
+﻿namespace BioID.BWS.WebApp.Pages.PhotoVerify
 {
+    using BioID.Services;
+    using Google.Protobuf;
+    using Grpc.Core;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+    using System.Text.Json;
+
     public class PhotoVerifyModel(BioIDWebService.BioIDWebServiceClient bwsServiceClient, ILoggerFactory loggerFactory) : PageModel
     {
         private readonly ILogger _logger = loggerFactory.CreateLogger("LivenessDetection");
@@ -27,9 +27,9 @@ namespace BioID.BWS.WebApp.Pages.PhotoVerify
                     return Partial("_PhotoVerifyResult", new PhotoVerifyResultModel { ErrorString = "Missing images: at least one live image and an ID photo are required!" });
                 }
 
-                using MemoryStream idStream = new();
-                using MemoryStream liveStream1 = new();
-                using MemoryStream liveStream2 = new();
+                await using MemoryStream idStream = new();
+                await using MemoryStream liveStream1 = new();
+                await using MemoryStream liveStream2 = new();
 
                 await idphoto.CopyToAsync(idStream).ConfigureAwait(false);
                 await liveimage1.CopyToAsync(liveStream1).ConfigureAwait(false);
@@ -43,7 +43,7 @@ namespace BioID.BWS.WebApp.Pages.PhotoVerify
                 request.LiveImages.Add(new ImageData() { Image = image1 });
                 request.LiveImages.Add(new ImageData() { Image = image2 });
 
-                var photoVerifyCall = _bws.PhotoVerifyAsync(request, new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
+                using var photoVerifyCall = _bws.PhotoVerifyAsync(request, new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
                 var response = await photoVerifyCall.ResponseAsync.ConfigureAwait(false);
 
                 _logger.LogInformation("Call to photoverify API returned {StatusCode}.", response.Status);

@@ -1,12 +1,12 @@
-﻿using BioID.Services;
-using Google.Protobuf;
-using Grpc.Core;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Text.Json;
-
-namespace BioID.BWS.WebApp.Pages.LivenessDetection
+﻿namespace BioID.BWS.WebApp.Pages.LivenessDetection
 {
+    using BioID.Services;
+    using Google.Protobuf;
+    using Grpc.Core;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+    using System.Text.Json;
+
     public class LivenessDetectionModel(BioIDWebService.BioIDWebServiceClient bwsServiceClient, ILoggerFactory loggerFactory) : PageModel
     {
         private readonly ILogger _logger = loggerFactory.CreateLogger("LivenessDetection");
@@ -26,13 +26,13 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
                     return Partial("_LivenessDetectionResult", new LivenessDetectionResultModel { ErrorString = "At least one image is required for liveness detection!" });
                 }
 
-                using var s1 = liveimage1.OpenReadStream();
+                await using var s1 = liveimage1.OpenReadStream();
                 ByteString image1 = await ByteString.FromStreamAsync(s1).ConfigureAwait(false);
                 ByteString? image2 = null;
                 var liveimage2 = Request.Form.Files["image2"];
                 if (liveimage2 != null)
                 {
-                    using var s2 = liveimage2.OpenReadStream();
+                    await using var s2 = liveimage2.OpenReadStream();
                     image2 = await ByteString.FromStreamAsync(s2).ConfigureAwait(false);
                 }
 
@@ -40,7 +40,7 @@ namespace BioID.BWS.WebApp.Pages.LivenessDetection
                 livenessRequest.LiveImages.Add(new ImageData() { Image = image1 });
                 if (image2 != null) { livenessRequest.LiveImages.Add(new ImageData() { Image = image2 }); }
 
-                var livenessCall = _bws.LivenessDetectionAsync(livenessRequest, new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
+                using var livenessCall = _bws.LivenessDetectionAsync(livenessRequest, new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
                 var response = await livenessCall.ResponseAsync.ConfigureAwait(false);
 
                 _logger.LogInformation("Call to livedetection API returned {StatusCode}.", response.Status);

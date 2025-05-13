@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-
-namespace BioID.BWS.WebApp.Pages.LivenessDetection
+﻿namespace BioID.BWS.WebApp.Pages.LivenessDetection
 {
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+
     public class LivenessDetectionResultModel : PageModel
     {
         /// <summary>

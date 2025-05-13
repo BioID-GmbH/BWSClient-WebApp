@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-
-namespace BioID.BWS.WebApp.Pages.PhotoVerify
+﻿namespace BioID.BWS.WebApp.Pages.PhotoVerify
 {
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+
     public class PhotoVerifyResultModel : PageModel
     {
         /// <summary>

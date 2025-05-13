@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-
-namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
+﻿namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
 {
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+
     public class NewDeepfakeDetectionResultModel : PageModel
     {
         /// <summary>

@@ -1,12 +1,12 @@
-﻿using BioID.Services;
-using Google.Protobuf;
-using Grpc.Core;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Text.Json;
-
-namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
+﻿namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
 {
+    using BioID.Services;
+    using Google.Protobuf;
+    using Grpc.Core;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+    using System.Text.Json;
+
     public class NewDeepfakeDetectionModel(BioIDWebService.BioIDWebServiceClient bwsServiceClient, ILoggerFactory loggerFactory) : PageModel
     {
         private readonly ILogger _logger = loggerFactory.CreateLogger("NewDeepfakeDetectionModel");
@@ -25,7 +25,7 @@ namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
                 // for image 
                 if (imageFile != null)
                 {
-                    using MemoryStream ms = new();
+                    await using MemoryStream ms = new();
                     await imageFile.CopyToAsync(ms).ConfigureAwait(false);
                     var image = ms.ToArray();
 
@@ -33,7 +33,7 @@ namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
                     var livenessRequest = new LivenessDetectionRequest();
                     livenessRequest.LiveImages.Add(new ImageData() { Image = ByteString.CopyFrom(image) });
 
-                    var livenessCall = _bwsWebServiceClient.LivenessDetectionAsync(livenessRequest, headers: new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
+                    using var livenessCall = _bwsWebServiceClient.LivenessDetectionAsync(livenessRequest, headers: new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
                     var response = await livenessCall.ResponseAsync.ConfigureAwait(false);
 
                     _logger.LogInformation("Call to livedetection API returned {StatusCode}.", response.Status);
@@ -53,7 +53,7 @@ namespace BioID.BWS.WebApp.Pages.DeepfakeDetection
                 // for video
                 else if (videoFile != null)
                 {
-                    using MemoryStream ms = new();
+                    await using MemoryStream ms = new();
                     await videoFile.CopyToAsync(ms).ConfigureAwait(false);
                     var video = ms.ToArray();
 
