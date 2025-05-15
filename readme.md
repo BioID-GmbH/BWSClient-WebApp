@@ -7,6 +7,9 @@ The web app captures images from the webcam and convert them into byte arrays. T
 and the returned results are displayed in the UI.
 
 You can explore and clone the repository to better understand the implementation of these biometric features. Contributions to the project are welcome!
+<p align="center">
+<a href="https://youtu.be/R-ySuJ-KiAQ"><img src="https://img.youtube.com/vi/R-ySuJ-KiAQ/0.jpg" width="50%"></a>
+</p>
 
 If you're curious about the functionalities mentioned above and would like to explore the app without needing to build it,
 you can do so on our [BioID Playground][playground], where you can get a first impression of how our biometric services work.
