@@ -91,9 +91,15 @@ The settings file is located in the root folder of the app.
 ### How it Works in Detail 
 [Read more](workflow.md)
 
+### Learn More
+
+- [Liveness Detection][liveness] – Learn how BioID detects presentation attacks using facial biometrics.
+
+
 ### Need Help?
 - Check out the [BioID Playground][playground] to see how the features work in real-time without building the app.
 - Explore the [BioID Documentation][developerdocu] for more detailed information on using the BWS API.
+
 
 
 [dotnet8]: https://dotnet.microsoft.com/download "Download .NET8"
@@ -101,7 +107,7 @@ The settings file is located in the root folder of the app.
 [bioidaccountregister]: https://account.bioid.com/Account/Register "Register a BioID account" 
 [trial]: https://bwsportal.bioid.com/ "Create a free trial subscription"
 [bwsportal]: https://bwsportal.bioid.com "BWS Portal"
-[liveness]: https://www.bioid.com/liveness-detection/ "Presentation attack detection."
+[liveness]: https://www.bioid.com/liveness-detection/ "PAD and Deepfake detection"
 [photoverify]: https://www.bioid.com/identity-verification-photoverify/ "PhotoVerify"
 [deepfake]: https://www.bioid.com/deepfake-detection/ "Face DeeepFake Detection"
 [playground]: https://playground.bioid.com "BioID Playground"
