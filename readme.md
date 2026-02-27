@@ -20,7 +20,7 @@ you can do so on our [BioID Playground][playground], where you can get a first i
 - **PhotoVerify**: Matches a selfie with an ID photo while performing liveness checks.
 
 ## Technologies Used
-- **ASP.NET Core 8**: A powerful, cross-platform web framework.
+- **ASP.NET Core 10**: A powerful, cross-platform web framework.
 - **gRPC**: For high-performance communication between the client and the BWS.
 - **C#**: The main programming language for backend development.
 - **HTML5**, **CSS**, **JavaScript**: For front-end development and user interface.
@@ -102,7 +102,7 @@ The settings file is located in the root folder of the app.
 
 
 
-[dotnet8]: https://dotnet.microsoft.com/download "Download .NET8"
+[dotnet10]: https://dotnet.microsoft.com/download "Download .NET 10"
 [dotnettools]: https://dotnet.microsoft.com/platform/tools ".NET Tools & Editors"
 [bioidaccountregister]: https://account.bioid.com/Account/Register "Register a BioID account" 
 [trial]: https://bwsportal.bioid.com/ "Create a free trial subscription"
