@@ -4,32 +4,31 @@
 // using MediaDevices.getUserMedia() (this may require the getUserMedia polyfill).
 // On success an optional callback function is called.
 // Example usage:
-// var video = document.createElement('video');
-// startVideo(video, initCanvases);
+// let video = document.createElement('video');
+// let ok = await startVideoAsync(video, initCanvases);
 // function initCanvases(videoElement, mediaStream) { ... }
-function startVideo(videoElement, successCallback, highRes = false, facingMode = "user") {
-    const constraints = highRes ? { audio: false, video: { width: { ideal: 4096 } } } : { audio: false, video: { facingMode: facingMode, height: { ideal: 600, min: 480 } } };
-    navigator.mediaDevices.getUserMedia(constraints)
+export async function startVideoAsync(videoElement, successCallback, highRes = false, facingMode = "user") {
+    const constraints = highRes ? { audio: false, video: { facingMode: facingMode, width: { ideal: 4096, min: 600 } } } : { audio: false, video: { facingMode: facingMode, height: { ideal: 600, min: 480 } } };
+    return await navigator.mediaDevices.getUserMedia(constraints)
         .then(function (mediaStream) {
             // Virtual camera devices are denied!
-            if (isVirtualDevice(mediaStream)) return;
-            console.log('Media stream created:', mediaStream.getVideoTracks()[0]);
+            if (isVirtualDevice(mediaStream)) return false;
             videoElement.srcObject = mediaStream;
             videoElement.onloadedmetadata = function (e) {
-                console.log('Playing live media stream');
                 videoElement.play();
                 if (successCallback) { successCallback(videoElement, mediaStream); }
             };
+            return true;
         })
         .catch(function (err) {
-            console.log('getUserMedia() error: ', err);
-            alert(err.name + ': ' + err.message);
+            console.error(err.name + ': ' + err.message);
+            return false;
         });
 }
 
 // Stop video capturing of the provided media player element.
 // Returns true when video was stopped, false if it was not running.
-function stopVideo(videoElement) {
+export function stopVideo(videoElement) {
     let stream = videoElement.srcObject;
     if (stream) {
         stream.getTracks().forEach(track => {
@@ -43,10 +42,10 @@ function stopVideo(videoElement) {
 }
 
 // Create a template for cross-correlation from the given canvas pixel data (ImageData object).
-function createTemplate(imageData) {
+export function createTemplate(imageData) {
     // cut out the template:
     // we use a small width, quarter-size image around the center as template
-    var template = {
+    let template = {
         centerX: imageData.width / 2,
         centerY: imageData.height / 2,
         width: imageData.width / 4,
@@ -58,10 +57,10 @@ function createTemplate(imageData) {
 
     let counter = 0;
     let p = imageData.data;
-    for (var y = template.yPos; y < template.yPos + template.height; y++) {
+    for (let y = template.yPos; y < template.yPos + template.height; y++) {
         // we use only the green plane here
         let bufferIndex = (y * imageData.width * 4) + template.xPos * 4 + 1;
-        for (var x = template.xPos; x < template.xPos + template.width; x++) {
+        for (let x = template.xPos; x < template.xPos + template.width; x++) {
             let templatepixel = p[bufferIndex];
             template.buffer[counter++] = templatepixel;
             // we use only the green plane here
@@ -79,7 +78,7 @@ function createTemplate(imageData) {
 // We use the normalized cross correlation to be independent of lighting changes.
 // Note that we calculate the correlation of template and image over the whole image area.
 // Returns the movement-percentage (i.e. a value between 0% and 100%).
-function motionDetection(imageData, template) {
+export function motionDetection(imageData, template) {
     let bestHitX = 0,
         bestHitY = 0,
         maxCorr = 0,
@@ -87,18 +86,18 @@ function motionDetection(imageData, template) {
         searchHeight = imageData.height / 4,
         p = imageData.data;
 
-    for (var y = template.centerY - searchHeight; y <= template.centerY + searchHeight - template.height; y++) {
-        for (var x = template.centerX - searchWidth; x <= template.centerX + searchWidth - template.width; x++) {
+    for (let y = template.centerY - searchHeight; y <= template.centerY + searchHeight - template.height; y++) {
+        for (let x = template.centerX - searchWidth; x <= template.centerX + searchWidth - template.width; x++) {
             let nominator = 0,
                 denominator = 0,
                 templateIndex = 0;
 
             // Calculate the normalized cross-correlation coefficient for this position
-            for (var ty = 0; ty < template.height; ty++) {
+            for (let ty = 0; ty < template.height; ty++) {
                 // we use only the green plane here
                 let bufferIndex = x * 4 + 1 + (y + ty) * imageData.width * 4;
-                for (var tx = 0; tx < template.width; tx++) {
-                    var imagepixel = p[bufferIndex];
+                for (let tx = 0; tx < template.width; tx++) {
+                    let imagepixel = p[bufferIndex];
                     nominator += template.buffer[templateIndex++] * imagepixel;
                     denominator += imagepixel * imagepixel;
                     // we use only the green plane here
@@ -140,9 +139,9 @@ function motionDetection(imageData, template) {
 // mediaDevices - getUserMedia - polyfill
 // usage: navigator.mediaDevices.getUserMedia({ video: true }).then(function (mediaStream) { ... }).catch(function (err) { ... });
 (function () {
-    var promisifiedOldGUM = function promisifiedOldGUM(constraints, successCallback, errorCallback) {
+    let promisifiedOldGUM = function promisifiedOldGUM(constraints, successCallback, errorCallback) {
         // First get ahold of getUserMedia, if present
-        var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
         // Some browsers just don't implement it - return a rejected promise with an error to keep a consistent interface
         if (!getUserMedia) {
             return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
@@ -171,12 +170,12 @@ function motionDetection(imageData, template) {
         Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
             value: function (callback, type, quality) {
                 console.log('using toBlob poyfill based on toDataURL');
-                var canvas = this;
+                let canvas = this;
                 setTimeout(function () {
-                    var binStr = atob(canvas.toDataURL(type, quality).split(',')[1]),
+                    let binStr = atob(canvas.toDataURL(type, quality).split(',')[1]),
                         len = binStr.length,
                         arr = new Uint8Array(len);
-                    for (var i = 0; i < len; i++) {
+                    for (let i = 0; i < len; i++) {
                         arr[i] = binStr.charCodeAt(i);
                     }
                     callback(new Blob([arr], { type: type || 'image/png' }));

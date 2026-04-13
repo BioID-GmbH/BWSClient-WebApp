@@ -1,91 +1,58 @@
 ﻿@model LivenessDetectionResultModel
 
+<div id="processing" class="mb-5 d-none">
+    <p class="d-flex justify-content-center"><span class="spinner-border text-primary" role="status"></span><span class="text-primary">&nbsp;Processing...</span></p>
+</div>
+
 @if (!string.IsNullOrWhiteSpace(Model.ErrorString))
 {
-    <div class="w-100 text-center text-danger mb-3 text-break">@Model.ErrorString</div>
-    <div class="w-100">
-        <div class="row">
-            <div class="col-6">
-                <div>SELFIE 1</div>
-                <img class="border img-fluid w-100" id="image1" src="~/images/bg-placeholder.png">
-            </div>
-            <div class="col-6">
-                <div>SELFIE 2</div>
-                <img class="border img-fluid w-100" id="image2" src="~/images/bg-placeholder.png">
-            </div>
-        </div>
-    </div>
+    <div id="result-text" class="w-100 text-center text-danger mb-4 text-break">@Model.ErrorString</div>
 }
 else @if (Model.Live)
 {
-    <p><img src="~/images/pokal_icon.svg" width="32" alt="congratulation" /></p>
-    <small>BWS Liveness Detection result:</small>
-    @if (Model.LivenessScore > 0.0)
-    {
-        <h4 class="text-primary">This was live!</h4>
-        <small class="mb-3">Score: @Model.LivenessScore</small>
-    } else
-    {
-        <h4 class="text-primary mb-4">This was live!</h4>
-    }
-    <div class="w-100">
-        <div class="row">
-            <div id="selfie1" class="col-6">
-                <div class="text-success">SELFIE 1</div>
-                <img class="border border-2 border-success img-fluid w-100" id="image1" style="min-height:4rem;" title="@Model.ImageProperties1">
-            </div>
-            @if (Model.Active)
-            {
-                <div id="selfie2" class="col-6">
-                    <div class="text-success">SELFIE 2</div>
-                    <img class="border border-2 border-success img-fluid w-100" id="image2" style="min-height:4rem;" title="@Model.ImageProperties2">
-                </div>
-            }
-            else
-            {
-                <div id="selfie2" class="col-6">
-                    <div>SELFIE 2</div>
-                    <img class="border img-fluid w-100" id="image2" src="~/images/bg-placeholder.svg">
-                </div>
-            }
-            <div class="col-12">
-                <div class="hint">*hover over the selfies for more results</div>
-            </div>
-        </div>
+    <div id="result-text" class="mb-4">
+        <p><img src="~/images/pokal_icon.svg" width="24" alt="congratulations" /></p>
+        <small>BWS Liveness Detection result:</small>
+        <h5 class="text-primary">This was live!</h5>
     </div>
 }
 else
 {
-    <small>BWS Liveness Detection result:</small>
-    <h4 class="text-danger">This was fake!</h4>
-    @foreach (var hint in Model.ErrorMessages) { <div class="text-danger">@hint</div> }
-    <div class="my-2">
-        You were wrongly classified as fake?<br />
-        <a href="#" data-bs-toggle="modal" data-bs-target="#howItWorks">See instruction</a>
-    </div>
-    <div class="w-100">
-        <div class="row">
-            <div id="selfie1" class="col-6">
-                <div class="text-danger">SELFIE 1</div>
-                <img class="border border-2 border-danger img-fluid w-100" id="image1" style="min-height:4rem;" title="@Model.ImageProperties1">
-            </div>
-            @if (Model.Active)
+    <div id="result-text" class="mb-4">
+        <small>BWS Liveness Detection result:</small>
+        <h5 class="text-danger">This was fake!</h5>
+        <div>
+            @foreach (var err in Model.ErrorMessages)
             {
-                <div id="selfie2" class="col-6">
-                    <div class="text-danger">SELFIE 2</div>
-                    <img class="border border-2 border-danger img-fluid w-100" id="image2" style="min-height:4rem;" title="@Model.ImageProperties2">
-                </div>
+                <div class="text-danger">@err</div>
             }
-            else
-            {
-                <div id="selfie2" class="col-6">
-                    <div>SELFIE 2</div>
-                    <img class="border img-fluid w-100" id="image2" src="~/images/bg-placeholder.svg">
-                </div>
-            }
-            <div class="col-12">
-                <div class="hint">*hover over the selfies for more results</div>
-            </div>
         </div>
     </div>
 }
+
+<div class="row w-100 overflow-x-auto flex-nowrap justify-content-start">
+    <div id="selfie1" class="col-6">
+        <div>SELFIE 1</div>
+        <img class="border img-fluid w-100" id="image1" src="~/images/bg-placeholder.svg" title="@(Model.ImageProperties.Count > 0 ? Model.ImageProperties[0] : string.Empty)">
+    </div>
+    <div id="selfie2" class="col-6 d-none">
+        <div>SELFIE 2</div>
+        <img class="border img-fluid w-100" id="image2" src="~/images/bg-placeholder.svg" title="@(Model.ImageProperties.Count > 1 ? Model.ImageProperties[1] : string.Empty)">
+    </div>
+    <div id="selfie3" class="col-6 d-none">
+        <div>SELFIE 3</div>
+        <img class="border img-fluid w-100" id="image3" src="~/images/bg-placeholder.svg" title="@(Model.ImageProperties.Count > 2 ? Model.ImageProperties[2] : string.Empty)">
+    </div>
+    <div id="selfie4" class="col-6 d-none">
+        <div>SELFIE 4</div>
+        <img class="border img-fluid w-100" id="image4" src="~/images/bg-placeholder.svg" title="@(Model.ImageProperties.Count > 3 ? Model.ImageProperties[3] : string.Empty)">
+    </div>
+    <div id="selfie5" class="col-6 d-none">
+        <div>SELFIE 5</div>
+        <img class="border img-fluid w-100" id="image5" src="~/images/bg-placeholder.svg" title="@(Model.ImageProperties.Count > 4 ? Model.ImageProperties[4] : string.Empty)">
+    </div>
+    <div id="selfie6" class="col-6 d-none">
+        <div>SELFIE 6</div>
+        <img class="border img-fluid w-100" id="image6" src="~/images/bg-placeholder.svg" title="@(Model.ImageProperties.Count > 5 ? Model.ImageProperties[5] : string.Empty)">
+    </div>
+</div>

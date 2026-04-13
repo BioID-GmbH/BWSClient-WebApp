@@ -30,14 +30,14 @@ you can do so on our [BioID Playground][playground], where you can get a first i
 - `Properties/`
     - `launchsettings.json` - For configuring how the application is launched and debugged during development.
   The port on which the app runs can also be set here.It is only relevant if you start in Visual Studio.
-- `Helper/` - Contains extension methods that enhance functionality and provide additional capabilities within the application.
+- `Extensions/` - Contains extension methods that enhance functionality and provide additional capabilities within the application.
 - `Pages/` - Contains Razor Pages that define the application's UI and functionality.
 - `protos/` - Contains a ProtoBuf file that is used to define the structure of data for gRPC services.
 - `appsettings.json` - This file is for application specific configurations in an ASP.NET Core application.
 - `Program.cs` - This is the main entry point of the application.
 
 ## Get Started
-The **BWSClient WebApp** is ready to use and provides a sample web application built with **.NET 8**. It runs on all major platforms (Windows, Linux, and macOS). Here’s how to get started:
+The **BWSClient WebApp** is ready to use and provides a sample web application built with **.NET 10**. It runs on all major platforms (Windows, Linux, and macOS). Here’s how to get started:
 
 > Please note: PhotoVerify performs a face match between ID photo and selfie in addition to liveness detection.
 
@@ -112,5 +112,3 @@ The settings file is located in the root folder of the app.
 [deepfake]: https://www.bioid.com/deepfake-detection/ "Face DeeepFake Detection"
 [playground]: https://playground.bioid.com "BioID Playground"
 [developerdocu]: https://developer.bioid.com/BWS/NewBws "BioID Developer"
-
-

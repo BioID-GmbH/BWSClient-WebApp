@@ -1,46 +1,51 @@
-﻿// import our customized Bootstrap variables
+﻿// import our customized Bootstrap
 @import "bootstrap";
-// load custom fonts used by BioID
+// load custom fonts (Poppins and FiraCode)
 @import "fonts";
 
-// main layout
-main {
-    // keep some space on top for the navbar
-    > .container-fluid {
-        padding-top: 7rem;
-    }
+:root,
+[data-bs-theme="light"] {
+    --navbar-bg: $bioid-light-bg;
+    --navbar-bg-rgb: #{to-rgb($bioid-light-bg)};
+    --navbar-opacity: .9;
+    --shadow-rgb: #{to-rgb($bioid-dark)};
+    --shadow-opacity: .3;
 }
 
-// the fixed navbar style
+[data-bs-theme="dark"] {
+    --navbar-bg: $bioid-dark;
+    --navbar-bg-rgb: #{to-rgb($bioid-dark)};
+    --shadow-rgb: #{to-rgb($bioid-blue2)};
+    --shadow-opacity: .3;
+}
+
+$navbar-bg: rgba(var(--navbar-bg-rgb), var(--navbar-opacity));
+$shadow-color: rgba(var(--shadow-rgb), var(--shadow-opacity));
+
+.bg-navbar {
+    background-color: $navbar-bg !important;
+}
+
 .navbar {
     padding: 1rem;
 
-    .navbar-title {
-        position: absolute;
-        top: 2.5rem;
-        left: 50%;
-        transform: translate(-50%);
-        padding: 0 2rem;
-    }
-
     .navbar-logo {
         width: 7rem;
-    }
 
-    &.bg-light {
-        background-color: white !important;
-        box-shadow: 0px 1px 5px tint-color($bioid-dark, 85%);
-    }
-
-    @include media-breakpoint-down(md) {
-        .navbar-nav {
-            padding-top: 1rem;
+        @include media-breakpoint-down(sm) {
+            width: 5rem;
         }
     }
 
-    @include media-breakpoint-up(md) {
-        &.bg-light {
-            background-color: rgba(white, .95) !important;
+    .navbar-title {
+        position: absolute;
+        top: 2rem;
+        left: 50%;
+        transform: translate(-50%);
+        padding: 0 1rem;
+
+        @include media-breakpoint-down(sm) {
+            top: 1.2rem;
         }
     }
 
@@ -57,36 +62,78 @@ main {
     }
 }
 
-// our custom buttons
-.btn {
-    border-radius: .3rem;
-    padding: .5rem 2rem .5rem 2rem
-}
-
 .btn-nav {
     position: fixed;
-    width: 5.5rem;
-    height: 5.5rem;
+    width: 6.4rem;
+    height: 6.4rem;
+    font-size: 0.8rem;
+    font-weight: normal;
     top: 0rem;
     right: 0;
     padding: 0rem;
     border-radius: 0;
-    font-size: 0.7rem;
     display: flex;
-    box-shadow: 0px 10px 15px -5px rgba(0,0,0,0.3);
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    box-shadow: 0px 12px 12px -5px $shadow-color;
 
-    > svg {
-        font-size: 3em;
-        margin-bottom: 0.5rem;
+    img {
+        width: 2.5rem;
+        height: 2.5rem;
+        padding-bottom: 0.5rem;
     }
 
-    &:hover, &:focus {
-        background-color: $bioid-blue;
-        border-color: $bioid-blue;
+    &.btn-nav1 {
+        top: 10rem;
     }
+
+    &.btn-nav2 {
+        top: 18.4rem;
+    }
+
+    &.btn-nav3 {
+        top: 26.8rem;
+    }
+}
+
+main {
+    // keep some space on top for the navbar
+    > .container-fluid {
+        padding-top: 7.5rem;
+    }
+}
+
+.main-bg {
+    background: url("../images/bg-pattern.svg") no-repeat right top;
+    background-size: 420px;
+    background-blend-mode: lighten;
+}
+
+.footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    width: 100%;
+}
+
+.dropup {
+    line-height: var(--bs-body-line-height);
+}
+
+.scrollToTopBtn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 100;
+    opacity: 0;
+    transform: translateY(100px);
+    transition: all .8s ease;
+    padding: 0.5rem;
+}
+
+.showBtn {
+    opacity: 1;
+    transform: translateY(0)
 }
 
 .demo {
@@ -110,28 +157,53 @@ main {
     }
 }
 
-.btn-close-tr {
-    position: absolute;
-    padding: 1rem 1rem;
-    top: 0;
-    right: 0;
+.bws3::after {
+    font-size: 0.6rem;
+    color: $bioid-coral;
+    content: " BWS 3";
+    vertical-align: top;
+    white-space: pre;
 }
 
-.with-overlay {
-    position: relative;
+.bwsclassic::after {
+    font-size: 0.6rem;
+    color: $bioid-blue;
+    content: " Classic BWS";
+    vertical-align: top;
+    white-space: pre;
+}
 
-    .overlay-cb1 {
-        position: absolute;
-        bottom: 1rem;
-        left: 50%;
-        transform: translate(-50%);
-    }
+.btn-close-tr {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: $stretched-link-z-index + 1;
+    padding: $alert-padding-y * 1.25 $alert-padding-x;
+}
 
-    .overlay-tr {
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
+.no-filter {
+    filter: none;
+}
+
+.how-it-works {
+    position: absolute;
+    top: 2%;
+    right: 3%;
+    color: white;
+}
+
+.capture-btn {
+    position: absolute;
+    bottom: 0.8rem;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.head-movement {
+    position: absolute;
+    top: 5%;
+    width: 100%;
+    text-align: center;
 }
 
 .btn-circle {
@@ -140,7 +212,37 @@ main {
     padding: 0.4rem;
     border-radius: 1.5rem;
     font-size: 2rem;
-    background: rgba(255, 255, 255, 0.50);
+
+    svg {
+        vertical-align: top;
+    }
+}
+
+.bg-body-tertiary {
+    --bs-bg-opacity: 0.8;
+    background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity)) !important;
+}
+
+.select-country {
+    width: 14rem;
+}
+
+.img-mw300 {
+    max-width: 300px;
+    height: auto;
+}
+
+.img-w300 {
+    width: min(100%, 300px);
+    height: auto;
+}
+
+.select-format {
+    max-width: 30rem;
+}
+
+.format-details {
+    max-width: 8rem;
 }
 
 // rotates a expand/collapse chevron
@@ -156,35 +258,29 @@ main {
     }
 }
 
-.table-far {
-    width: auto;
-
-    > :not(caption) > * > * {
-        padding: 0.25rem 1rem;
-        text-align: left;
-    }
-}
-
-.border-right-md {
-    @include media-breakpoint-up(md) {
-        border-right: 2px solid $border-color;
+@include color-mode(dark) {
+    .navbar-brand {
+        img {
+            content: url("../images/BioID_Light.svg");
+        }
     }
 
-    @include media-breakpoint-down(md) {
-        margin-bottom: 2rem;
+    .ld-icon {
+        img {
+            content: url("../images/LivenessDetection_Light.svg");
+        }
     }
-}
 
-.hint {
-    font-size: 0.75rem;
-    font-style: italic;
-    color: var(--bs-secondary-color)
-}
+    .fdd-icon {
+        img {
+            content: url("../images/DeepfakeDetection_Light.svg");
+        }
+    }
 
-// right-align labels in horizontal forms
-@include media-breakpoint-up(sm) {
-    .col-form-label {
-        text-align: right;
+    .pv-icon {
+        img {
+            content: url("../images/PhotoVerify_Light.svg");
+        }
     }
 }
 

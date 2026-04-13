@@ -4,281 +4,158 @@
     ViewData["Title"] = "Liveness Detection";
     ViewData["Heading"] = "Liveness Detection";
 }
-
-<div class="row mb-4">
-    <div class="col-12 offset-sm-1 col-sm-10 offset-md-2 col-md-8 offset-xl-3 col-xl-6">
-        <p>
-            <strong>Test our live detection API by sending two selfies to our BioID Web Service.</strong>
-        </p>
-        <p>
-            This demo performs a liveness detection on two selfies to verify whether they were recorded from a live person.
-            Just start the operation to capture the first image, then simply nod your head a bit to capture the second image.
-        </p>
-        <p>
-            Alternatively you can perform a simple passive liveness detection by just sending a single selfie.
-        </p>
-        <p>
-            This application uses our <strong>new BWS 3</strong> <a href="https://developer.bioid.com/bws/grpc/livenessdetection" target="_blank" rel="noopener">LivenessDetection API</a>.
-        </p>
-        <div class="d-flex justify-content-center" id="howtovideodiv">
-            <div class="with-overlay" style="max-width: 30rem">
-                <video src="~/videos/LivenessDetection-HowTo.mp4" id="howtovideo" class="img-fluid" title="Click to start/stop this video." autoplay="" playsinline="" loop="" muted=""></video>
-                <div class="overlay-tr">
-                    <button type="button" id="closehowtovideo" class="btn-close" aria-label="Close video" title="Close the video"></button>
-                </div>
-            </div>
-        </div>
-        <div>
-            <a href="https://youtu.be/fBbVBIub50I" target="_blank" rel="noopener" title="Liveness Detection - Full Instruction">
-                To the full instruction
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
-                    <path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" />
-                </svg>
-            </a>
-        </div>
+<section id="webapp" class="d-none">
+    <!-- Intro -->
+    <div class="row mb-5">
+        <div class="col-12 offset-sm-1 col-sm-10 offset-md-2 col-md-8 offset-xxl-3 col-xxl-6">
+            <p>
+                <strong>Test our liveness detection API by sending some selfies to our BioID Web Service.</strong>
+            </p><p>
+            This demo showcases our Face Liveness Detection technology for reliable Presentation Attack Detection (PAD).
+            It verifies that the captured selfies come from a real, physically present person — not from a photo, video replay,
+            screen display, or silicone mask. During the process, two images are taken while you perform a simple natural movement.
+            The system analyzes subtle visual cues to distinguish genuine live users from spoofing attempts.
+        </p><p>
+        This application uses our BWS 3 <a href="https://developer.bioid.com/bws/grpc/livenessdetection" target="_blank" rel="noopener">LivenessDetection API</a>.
+    </p>
+    <div>
+        <a href="https://youtu.be/fBbVBIub50I" target="_blank" rel="noopener" title="Liveness Detection - Full Instruction">
+            Watch an instruction video
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
+                <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393" />
+            </svg>
+        </a>
     </div>
 </div>
-
-<div class="row mb-5">
-    <div class="col-12 offset-sm-1 col-sm-10 offset-md-2 col-md-8 offset-lg-3 col-lg-6 offset-xxl-4 col-xxl-4">
-        <h4 id="operationHeading">One click &ndash; two selfies</h4>
-
-        <div class="row">
-            <div class="offset-6 col-6">
-                <div class="form-check form-switch text-start">
-                    <div>
-                        <input type="checkbox" class="form-check-input" id="toggleActivePassive" checked />
-                        <label class="form-check-label" for="toggleActivePassive" id="toggleActivePassiveLabel">Active liveness detection</label>
-                    </div>
+</div>
+    <!-- Mode selector -->
+    <div class="row mb-5">
+        <div class="col-12 offset-sm-1 col-sm-10 offset-md-2 col-md-8 offset-xxl-3 col-xxl-6">
+            <h4>Liveness Detection Mode</h4>
+            <p>
+                You can select between different liveness detection modes:
+            </p>
+            <form class="text-start" id="selectMode">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="liveDetectionModes" id="passiveLD" value="passive">
+                    <label class="form-check-label" for="passiveLD">
+                        <strong>Passive liveness detection</strong>: Performs a texture based liveness detection and a facial deepfake detection on a single selfie.
+                    </label>
                 </div>
-            </div>
-        </div>
-
-        <div class="row mb-5">
-            <div class="col-6">
-                <div class="d-flex justify-content-center">
-                    <div class="border img-fluid">
-                        <canvas class="align-bottom mw-100" id="drawingcanvas"></canvas>
-                    </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="liveDetectionModes" id="activeLD" value="active" checked="checked">
+                    <label class="form-check-label" for="activeLD">
+                        <strong>Active liveness detection</strong>: Performs passive liveness detections and additionally a motion-based 3D detection on two consecutive recordings.
+                    </label>
                 </div>
-            </div>
-
-            <div id="result-view" class="col-6 d-flex flex-column justify-content-end">
-                @if (!string.IsNullOrEmpty(Model.ErrorString))
-                {
-                    <div class="w-100 text-center text-danger mb-3 text-break">@Model.ErrorString</div>
-                }
-                <div class="w-100">
-                    <div class="row">
-                        <div id="selfie1" class="col-6">
-                            <div>SELFIE 1</div>
-                            <img class="border img-fluid w-100" id="image1" src="~/images/bg-placeholder.svg">
-                        </div>
-                        <div id="selfie2" class="col-6">
-                            <div>SELFIE 2</div>
-                            <img class="border img-fluid w-100" id="image2" src="~/images/bg-placeholder.svg">
-                        </div>
-                    </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="liveDetectionModes" id="challenge1" value="oneChallenge">
+                    <label class="form-check-label" for="challenge1">
+                        <strong>Challenge-Response</strong>: You are prompted to turn your head in a random direction. On the recorded image pair, an active liveness detection is performed
+                        and your head movement is verified.
+                    </label>
                 </div>
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-center">
-            <form method="post" id="capture-form">
-                <div><button id="capture" class="btn btn-primary">Perform Operation</button></div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="liveDetectionModes" id="challenge2" value="twoChallenges">
+                    <label class="form-check-label" for="challenge2">
+                        <strong>Two Challenges</strong>: More secure Challenge-Response with two challenges.
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="liveDetectionModes" id="challenge3" value="threeChallenges">
+                    <label class="form-check-label" for="challenge3">
+                        <strong>Three Challenges</strong>: Even more secure Challenge-Response with three challenges.
+                    </label>
+                </div>
             </form>
         </div>
     </div>
-</div>
+    <!-- Operation -->
+    <div class="row mb-3">
+        <div class="col-12 offset-sm-1 col-sm-10 offset-md-2 col-md-8 offset-xl-3 col-xl-6 offset-xxl-4 col-xxl-4">
+            <h4 id="operationHeading">One click &ndash; two selfies</h4>
 
+            <div class="row mb-4">
+                <div class="col-6 d-flex justify-content-center align-items-end">
+                    <div class="border img-fluid">
+                        <div class="position-relative">
+                            <div class="how-it-works z-3">
+                                <a class="text-white" href="#" data-bs-toggle="modal" data-bs-target="#howItWorks">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94" />
+                                    </svg>
+                                </a>
+                            </div>
+                            <div id="headMovementHint" class="head-movement text-white fs-6 fw-medium z-2">Center your head</div>
+                            <canvas id="uuicanvas" class="position-absolute top-0 start-0 w-100 h-100 z-1"></canvas>
+                            <canvas class="align-bottom mw-100" id="drawingcanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div id="result-view" class="mt-3 col-6 d-flex flex-column justify-content-end">
+                    <div id="processing" class="mb-5 d-none">
+                        <p class="d-flex justify-content-center"><span class="spinner-border text-primary" role="status"></span><span class="text-primary">&nbsp;Processing...</span></p>
+                    </div>
+                    <div id="result-text" class="d-none">
+                    </div>
+                    <div class="row w-100 overflow-x-auto flex-nowrap justify-content-start">
+                        <div id="selfie1" class="col-6">
+                            <div>SELFIE 1</div>
+                            <img class="border img-fluid w-100" id="image1" src="~/images/bg-placeholder.svg">
+                            </div>
+                            <div id="selfie2" class="col-6">
+                                <div>SELFIE 2</div>
+                                <img class="border img-fluid w-100" id="image2" src="~/images/bg-placeholder.svg">
+                                </div>
+                                <div id="selfie3" class="col-6 d-none">
+                                    <div>SELFIE 3</div>
+                                    <img class="border img-fluid w-100" id="image3" src="~/images/bg-placeholder.svg">
+                                    </div>
+                                    <div id="selfie4" class="col-6 d-none">
+                                        <div>SELFIE 4</div>
+                                        <img class="border img-fluid w-100" id="image4" src="~/images/bg-placeholder.svg">
+                                        </div>
+                                        <div id="selfie5" class="col-6 d-none">
+                                            <div>SELFIE 5</div>
+                                            <img class="border img-fluid w-100" id="image5" src="~/images/bg-placeholder.svg">
+                                            </div>
+                                            <div id="selfie6" class="col-6 d-none">
+                                                <div>SELFIE 6</div>
+                                                <img class="border img-fluid w-100" id="image6" src="~/images/bg-placeholder.svg">
+                                                </div>
+                                            </div>
+                                        </div>
+            </div>
+
+            <div class="d-flex justify-content-center mb-3">
+                <form method="post" id="capture-form">
+                    <input id="challenges" name="Input.Challenges" type="hidden" />
+                    <input id="livenessDetectionMode" name="Input.LivenessDetectionMode" type="hidden" value="1" />
+                    <input id="expected" name="Input.Expected" type="hidden" value="none" />
+                    <div><button id="capture" class="btn btn-primary">Perform Operation</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="skipBiometrics" class="d-none col-12 offset-sm-1 col-sm-10 offset-md-2 col-md-8 offset-lg-3 col-lg-6 offset-xxl-3 col-xxl-5">
+    <div class="alert alert-danger mb-4" role="alert">
+        <strong>We could not capture an image.</strong>
+        <br>
+        Sorry, but without access to the camera, facial recognition and liveness detection aren't possible!
+    </div>
+    <p>
+        It appears that we do not have access to the camera. To perform biometric operations, please try the following:
+    </p>
+    <ul class="mb-4 text-start">
+        <li>Make sure the camera is not utilized by another process.</li>
+        <li>Grant access to the camera.</li>
+        <li>Use a different browser (e.g. the most recent versions of Opera, Firefox, Chrome or Edge).</li>
+    </ul>
+</section>
 <partial name="_HowItWorks" />
-
 @section Scripts {
-    <!-- start video, motion detection, etc. -->
-    <script src="~/js/videoCapture.js"></script>
-    <script src="~/js/site.js"></script>
-
-    <script type="text/javascript">
-        const motionAreaHeight = 160;
-        const motionThreshold = isMobileDevice() ? 50 : 25;
-        var activeLivenessDetection = true;
-        var template = null;
-        var capturing = false;
-        var video = document.createElement('video');
-        video.setAttribute('playsinline', '');
-        var drawingCanvas = document.getElementById('drawingcanvas');
-        var motionCanvas = document.createElement('canvas');
-
-        var firstCapturedImage, secondCapturedImage;
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = OnReadyStateChange;
-
-        document.addEventListener("DOMContentLoaded", () => {
-
-            document.getElementById('capture').addEventListener('click', capture);
-
-            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-            popoverTriggerList.map((popoverTriggerEl) => { return new bootstrap.Popover(popoverTriggerEl) });
-
-            document.getElementById('howtovideo').addEventListener('click', () => {
-                let howtovideo = document.getElementById('howtovideo');
-                if (howtovideo.paused) { howtovideo.play(); }
-                else { howtovideo.pause(); }
-            });
-            document.getElementById('closehowtovideo').addEventListener('click', () => { document.getElementById('howtovideodiv').remove(); });
-
-            document.getElementById('toggleActivePassive').addEventListener('click', toggleLivenessDetection);
-
-            startVideo(video, initCanvases);
-        });
-
-        function capture(e) {
-            e.preventDefault();
-
-            // replace result with empty images
-            fetch('/LivenessDetection/EmptyResult')
-                .then((response) => {
-                    return response.text();
-                })
-                .then((result) => {
-                    document.getElementById('result-view').innerHTML = result;
-                    console.log(result);
-                    if (!activeLivenessDetection) { document.getElementById("selfie2").style.display = "none"; }
-                    document.getElementById('captureSpinner').style.display = "inline-block";
-                    capturing = true;
-                });
-            firstCapturedImage = null;
-            secondCapturedImage = null;
-            document.getElementById('capture').disabled = true;
-        }
-
-        function initCanvases(videoElement, mediaStream) {
-            // we prefer 3 : 4 face image resolution
-            let aspectratio = videoElement.videoWidth / videoElement.videoHeight < 3 / 4 ? videoElement.videoWidth / videoElement.videoHeight : 3 / 4;
-            drawingCanvas.height = videoElement.videoHeight;
-            drawingCanvas.width = drawingCanvas.height * aspectratio;
-            motionCanvas.height = motionAreaHeight;
-            motionCanvas.width = motionCanvas.height * aspectratio;
-
-            drawingCanvas.title = `Capturing ${videoElement.videoWidth}x${videoElement.videoHeight}px (cropped to ${drawingCanvas.width}x${drawingCanvas.height}) from ${mediaStream.getVideoTracks()[0].label}.`
-
-            // mirror live preview
-            let ctx = drawingCanvas.getContext('2d', { willReadFrequently: true });
-            ctx.translate(drawingCanvas.width, 0);
-            ctx.scale(-1, 1);
-            // set an interval-timer to grab about 20 frames per second
-            setInterval(processFrame, 50);
-        }
-
-        function processFrame() {
-            let w = drawingCanvas.width, h = drawingCanvas.height, aspectratio = w / h;
-            let cutoff = video.videoWidth - (video.videoHeight * aspectratio);
-            let ctx = drawingCanvas.getContext('2d', { willReadFrequently: true });
-            ctx.drawImage(video, cutoff / 2, 0, video.videoWidth - cutoff, video.videoHeight, 0, 0, w, h);
-
-            if (capturing) {
-                // scale current image into the motion canvas
-                let motionctx = motionCanvas.getContext('2d', { willReadFrequently: true });
-                motionctx.drawImage(drawingCanvas, w / 8, h / 8, w - w / 4, h - h / 4, 0, 0, motionCanvas.width, motionCanvas.height);
-                let currentImageData = motionctx.getImageData(0, 0, motionCanvas.width, motionCanvas.height);
-
-                if (template) {
-                    let movement = motionDetection(currentImageData, template);
-                    // trigger if movementPercentage is above threshold (default: when 20% of maximum movement is exceeded)
-                    if (movement > motionThreshold) {
-                        capturing = false;
-                        template = null;
-                        drawingCanvas.toBlob(handleImage2)
-                        console.log('captured second image');
-                    }
-                } else {
-                    // capture the current image
-                    if (activeLivenessDetection) {
-                        drawingCanvas.toBlob(setImage1)
-                        // use as template
-                        template = createTemplate(currentImageData);
-                    } else {
-                        capturing = false;
-                        drawingCanvas.toBlob(sendImage1)
-                    }
-                    console.log('captured first image');
-                }
-            }
-
-            ctx.beginPath();
-            ctx.arc(w / 2, h / 2, w * 0.4, 0, 2 * Math.PI);
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = '#fff';
-            ctx.stroke();
-            ctx.rect(0, 0, w, h);
-            ctx.fillStyle = 'rgba(220, 220, 220, 0.8)';
-            ctx.fill('evenodd');
-        }
-
-        function setImage1(blob) {
-            if (blob && blob.type.startsWith('image/')) {
-                firstCapturedImage = blob;
-                let image1 = document.getElementById('image1');
-                image1.src = window.URL.createObjectURL(blob);
-                image1.onload = () => { window.URL.revokeObjectURL(this.src); };
-            }
-        }
-        function setImage2(blob) {
-            if (blob && blob.type.startsWith('image/')) {
-                secondCapturedImage = blob;
-                let image2 = document.getElementById('image2');
-                image2.src = window.URL.createObjectURL(blob);
-                image2.onload = () => { window.URL.revokeObjectURL(this.src); };
-            }
-        }
-        function sendImage1(blob) {
-            setImage1(blob);
-            setTimeout(sendImages);
-        }
-        function handleImage2(blob) {
-            setImage2(blob);
-            setTimeout(sendImages);
-        }
-
-        function sendImages() {
-            document.getElementById('captureSpinner').style.display = "none";
-            document.getElementById('progressSpinner').style.display = "inline-block";
-
-            var formData = new FormData(document.getElementById('capture-form'));
-            formData.append('image1', firstCapturedImage);
-            if (secondCapturedImage != null) { formData.append('image2', secondCapturedImage); }
-            formData.append('isMobile', isMobileDevice().toString());
-            xhr.open("POST", "/LivenessDetection");
-            xhr.send(formData);
-        }
-
-        function OnReadyStateChange() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                if (xhr.status == 200) {
-                    let captureView = document.getElementById('result-view');
-                    captureView.innerHTML = this.responseText;
-                    setImage1(firstCapturedImage);
-                    if (secondCapturedImage != null) { setImage2(secondCapturedImage); }
-                    else { document.getElementById("selfie2").style.display = "none"; }
-                } else {
-                    alert('There was an error processing the AJAX request: ' + xhr.responseText);
-                }
-                document.getElementById('capture').disabled = false;
-            }
-        };
-
-        function toggleLivenessDetection() {
-            let toggle = document.getElementById('toggleActivePassive');
-            activeLivenessDetection = toggle.checked;
-            if (activeLivenessDetection) {
-                document.getElementById("toggleActivePassiveLabel").innerHTML = "Active liveness detection";
-                document.getElementById("operationHeading").innerHTML = "One click &ndash; two selfies";
-                document.getElementById("selfie2").style.display = "block";
-            } else {
-                document.getElementById("toggleActivePassiveLabel").innerHTML = "Passive liveness detection";
-                document.getElementById("operationHeading").innerHTML = "Take a selfie";
-                document.getElementById("selfie2").style.display = "none";
-            }
-        }
-    </script>
+    <script type="module" src="~/js/pages/LivenessDetection.js"></script>
 }

@@ -1,10 +1,19 @@
 {
-  "version": "1.0",
+  "version": "3.0",
   "defaultProvider": "jsdelivr",
   "libraries": [
     {
       "library": "bootstrap@5.3.8",
-      "destination": "wwwroot/lib/bootstrap/"
+      "destination": "wwwroot/lib/bootstrap/",
+      "files": [
+        "scss/**/*.*",
+        "dist/**/*.*"
+      ]
+    },
+    {
+      "library": "three@0.183.2",
+      "destination": "wwwroot/lib/three/",
+      "files": [ "build/three.module.min.js", "build/three.core.min.js", "examples/jsm/loaders/OBJLoader.min.js" ]
     }
   ]
 }

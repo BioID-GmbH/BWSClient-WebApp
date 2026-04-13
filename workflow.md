@@ -1,5 +1,4 @@
-﻿ 
-# How this sample implementation works
+﻿# How this sample implementation works
 
 This web application offers three main features: Liveness Detection, Face Deepfake Detection, and PhotoVerify.
 It can distinguish a live person from fakes such as images or videos using a standard camera,
@@ -15,7 +14,7 @@ More details about each feature are explained below.
 
 1. Access the webcam by requesting permission from the user.
 2. Once you have obtained permission, capturing of live webcam images begins.           
-3. Active liveness detection is enabled by default. You can use the checkbox to choose between active or passive liveness detection.   
+3. Active liveness detection is enabled by default. You can use the radio buttons to choose between different liveness detection modes.   
    * If active liveness detection is selected, the app captures two images in total. The first image is taken immediately upon pressing the button, and the BioID Motion Detection automatically detects the required movement to trigger the capture of the second image. After both images are captured, the upload process begins.
    * If passive liveness detection is selected, only one image is captured immediately upon pressing the button, as no additional movement is required. Once the image is captured, the uploading process begins.
 4. Upon successful upload, the web server calls the [BioID Web Service (BWS)][bwsreference] and returns the result to the client.
@@ -39,7 +38,7 @@ while the BioID Motion Detection automatically detects the required movement and
 
 ### Capturing images from webcam video using HTML5 
 Please take a look at the code. In each web view of every component, there is a canvas and a button element,
-located in the files: Pages/LivenessDetection.cshtml, Pages/PhotoVerify.cshtml, and Pages/NewDeepfakeDetection.cshtml.
+located in the files: Pages/LivenessDetection/LivenessDetection.cshtml, Pages/PhotoVerify/PhotoVerify.cshtml. (Note: The Face Deepfake Detection page uses file uploads, not webcam capture.)
 
 You need a _canvas_ for drawing the live webcam video. 
 
@@ -74,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
                else { howtovideo.pause(); }
            });
            document.getElementById('closehowtovideo').addEventListener('click', () => { document.getElementById('howtovideodiv').remove(); });
-           document.getElementById('toggleActivePassive').addEventListener('click', toggleLivenessDetection);
+           const video = document.createElement('video'); // Create video element for stream
            startVideo(video, initCanvases);
        });
 ```
@@ -200,8 +199,8 @@ function sendImages() {
             document.getElementById('progressSpinner').style.display = "inline-block";
 
             var formData = new FormData(document.getElementById('capture-form'));
-            formData.append('image1', firstCapturedImage);
-            if (secondCapturedImage != null) { formData.append('image2', secondCapturedImage); }
+            formData.append('Input.ImageFiles', firstCapturedImage);
+            if (secondCapturedImage != null) { formData.append('Input.ImageFiles', secondCapturedImage); }
             formData.append('isMobile', isMobileDevice().toString());
             xhr.open("POST", "/LivenessDetection");
             xhr.send(formData);
@@ -211,29 +210,19 @@ function sendImages() {
 ### Call BWS Liveness Detection API - [Reference][livenessreference]
 
 ```c#
-// _bws is a BioID Web Service gRPC client that is already configured in Program.cs
-var liveimage1 = Request.Form.Files["image1"];
-if (liveimage1 == null)
-{
-    return Partial("_LivenessDetectionResult", new LivenessDetectionResultModel { ErrorString = "At least one image is required for liveness detection!" });
+// Using the extension methods from Extensions/Helpers.cs
+var pic1 = await Input.ImageFiles[0].ReadFormFileAsync();
+var pic2 = Input.ImageFiles.Count > 1 ? await Input.ImageFiles[1].ReadFormFileAsync() : ByteString.Empty;
+string tag = string.Empty; // Optional: used for challenge-response or tracking
+
+LivenessDetectionResponse response;
+if (pic2.IsEmpty) {
+    // Passive Liveness
+    response = await _bws.SendLivenessRequestAsync(new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } }, string.Empty, pic1);
+} else {
+    // Active Liveness
+    response = await _bws.SendLivenessRequestAsync(new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } }, tag, pic1, pic2);
 }
-
-using var s1 = liveimage1.OpenReadStream();
-ByteString image1 = await ByteString.FromStreamAsync(s1).ConfigureAwait(false);
-ByteString? image2 = null;
-var liveimage2 = Request.Form.Files["image2"];
-if (liveimage2 != null)
-{
-    using var s2 = liveimage2.OpenReadStream();
-    image2 = await ByteString.FromStreamAsync(s2).ConfigureAwait(false);
-}
-
-var livenessRequest = new LivenessDetectionRequest();
-livenessRequest.LiveImages.Add(new ImageData() { Image = image1 });
-if (image2 != null) { livenessRequest.LiveImages.Add(new ImageData() { Image = image2 }); }
-
-var livenessCall = _bws.LivenessDetectionAsync(livenessRequest, new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
-var response = await livenessCall.ResponseAsync.ConfigureAwait(false);
 ```
 Please take a look at [LiveDetection API reference][livenessreference] section 'Response' for detailed information. 
 
@@ -245,21 +234,14 @@ For PhotoVerify, you only need to add the ID-Photo to the form data on the clien
 > Prompt the user to take a snapshot of their ID or passport photo (without holographic reflection). Please note: Only the portrait image is required for PhotoVerify call. A full UX guide for <a href="https://youtu.be/EMYCZdBDT54">ID photo capture</a> can be found on YouTube. 
 
 ```c#
-var idphoto = Request.Form.Files["idphoto"];
-var liveimage1 = Request.Form.Files["image1"];
-var liveimage2 = Request.Form.Files["image2"];
+// Using the extension methods from Extensions/Helpers.cs
+var idphoto = Request.Form.Files[0];
+var liveimage1 = Request.Form.Files[1];
+var liveimage2 = Request.Form.Files[2];
 
-using MemoryStream idStream = new();
-using MemoryStream liveStream1 = new();
-using MemoryStream liveStream2 = new();
-
-await idphoto.CopyToAsync(idStream).ConfigureAwait(false);
-await liveimage1.CopyToAsync(liveStream1).ConfigureAwait(false);
-await liveimage2.CopyToAsync(liveStream2).ConfigureAwait(false);
-
-ByteString photo = ByteString.CopyFrom(idStream.ToArray());
-ByteString image1 = ByteString.CopyFrom(liveStream1.ToArray());
-ByteString image2 = ByteString.CopyFrom(liveStream2.ToArray());
+ByteString photo = await idphoto.ReadFormFileAsync();
+ByteString image1 = await liveimage1.ReadFormFileAsync();
+ByteString image2 = await liveimage2.ReadFormFileAsync();
 
 var request = new PhotoVerifyRequest { Photo = photo };
 request.LiveImages.Add(new ImageData() { Image = image1 });
@@ -275,17 +257,15 @@ Please take a look at [PhotoVerify API reference][photoverifyreference] section 
 
 ```c#
 // Call for image
- var imageFile = Request.Form.Files["image"];
+var imageFile = Request.Form.Files["image"];
 
 if (imageFile != null)
 {
-    using MemoryStream ms = new();
-    await imageFile.CopyToAsync(ms).ConfigureAwait(false);
-    var image = ms.ToArray();
+    var image = await imageFile.ReadFormFileAsync();
 
     // Create request
     var livenessRequest = new LivenessDetectionRequest();
-    livenessRequest.LiveImages.Add(new ImageData() { Image = ByteString.CopyFrom(image) });
+    livenessRequest.LiveImages.Add(new ImageData() { Image = image });
 
     var livenessCall = _bwsWebServiceClient.LivenessDetectionAsync(livenessRequest, headers: new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
     var response = await livenessCall.ResponseAsync.ConfigureAwait(false);
@@ -295,14 +275,12 @@ if (imageFile != null)
 var videoFile = Request.Form.Files["video"];
 if (videoFile != null)
 {
-    using MemoryStream ms = new();
-    await videoFile.CopyToAsync(ms).ConfigureAwait(false);
-    var video = ms.ToArray();
+    var video = await videoFile.ReadFormFileAsync();
 
     // Add video sample to the grpc service request
     var videoRequest = new VideoLivenessDetectionRequest()
     {
-        Video = ByteString.CopyFrom(video)
+        Video = video
     };
     var videoLivenessCall = _bwsWebServiceClient.VideoLivenessDetectionAsync(videoRequest, headers: new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
     var response = await videoLivenessCall.ResponseAsync.ConfigureAwait(false);

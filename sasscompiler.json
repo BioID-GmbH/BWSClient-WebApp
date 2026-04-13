@@ -1,0 +1,15 @@
+{
+  // see https://github.com/koenvzeijl/AspNetCore.SassCompiler
+  "Arguments": "--quiet --style=compressed",
+  "Compilations": [
+    {
+      "Source": "wwwroot/scss/bioid.scss",
+      "Target": "wwwroot/css/bioid.min.css"
+    }
+  ],
+  "Configurations": {
+    "Debug": {
+      "Arguments": "--style=expanded"
+    }
+  }
+}

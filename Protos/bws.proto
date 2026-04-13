@@ -1,4 +1,4 @@
-// Copyright 2025 BioID GmbH.
+// Copyright 2026 BioID GmbH.
 // Definition of the BioID Web Service (BWS) 3 API.
 
 syntax = "proto3";

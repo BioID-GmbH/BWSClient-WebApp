@@ -1,4 +1,4 @@
-// Copyright 2025 BioID GmbH.
+// Copyright 2026 BioID GmbH.
 // Definition of messages as used in various BWS 3 APIs.
 
 syntax = "proto3";

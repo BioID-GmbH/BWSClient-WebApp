@@ -8,20 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="compilerconfig.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Protos\bws.proto" />
     <None Remove="Protos\bwsmessages.proto" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <None Include="compilerconfig.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="BuildWebCompiler2022" Version="1.14.15" />
+    <PackageReference Include="AspNetCore.SassCompiler" Version="1.99.0" />
     <PackageReference Include="Google.Protobuf" Version="3.34.1" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.76.0" />
@@ -35,6 +27,10 @@
   <ItemGroup>
     <Protobuf Include="Protos\bws.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\bwsmessages.proto" GrpcServices="None" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
 </Project>
