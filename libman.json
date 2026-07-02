@@ -11,7 +11,7 @@
       ]
     },
     {
-      "library": "three@0.184.0",
+      "library": "three@0.185.0",
       "destination": "wwwroot/lib/three/",
       "files": [ "build/three.module.min.js", "build/three.core.min.js", "examples/jsm/loaders/OBJLoader.min.js" ]
     }
