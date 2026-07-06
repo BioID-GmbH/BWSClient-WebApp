@@ -43,7 +43,7 @@ namespace BioID.BWS.WebApp.Pages.FaceDeepfakeDetection
                     using var livenessCall = _bwsWebServiceClient.LivenessDetectionAsync(livenessRequest, headers: new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
                     var response = await livenessCall.ResponseAsync.ConfigureAwait(false);
 
-                    _logger.LogInformation("Call to livedetection API returned {StatusCode}.", response.Status);
+                    if (_logger.IsEnabled(LogLevel.Information)) { _logger.LogInformation("Call to livedetection API returned {StatusCode}.", response.Status); }
 
                     var json = JsonSerializer.Serialize(response, _serializerOptions);
                     return Partial("_FaceDeepfakeDetectionResult", new FaceDeepfakeDetectionResultModel()
@@ -73,7 +73,7 @@ namespace BioID.BWS.WebApp.Pages.FaceDeepfakeDetection
                     var videoLivenessCall = _bwsWebServiceClient.VideoLivenessDetectionAsync(videoRequest, headers: new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
                     var response = await videoLivenessCall.ResponseAsync.ConfigureAwait(false);
 
-                    _logger.LogInformation("Call to videolivenessdetection API returned {StatusCode}.", response.Status);
+                    if (_logger.IsEnabled(LogLevel.Information)) { _logger.LogInformation("Call to videolivenessdetection API returned {StatusCode}.", response.Status); }
 
                     var json = JsonSerializer.Serialize(response, _serializerOptions);
                     return Partial("_FaceDeepfakeDetectionResult", new FaceDeepfakeDetectionResultModel()

@@ -43,7 +43,7 @@
                 using var photoVerifyCall = _bws.PhotoVerifyAsync(request, new Metadata { { "Reference-Number", "BioID.BWS.DemoWebApp" } });
                 var response = await photoVerifyCall.ResponseAsync.ConfigureAwait(false);
 
-                _logger.LogInformation("Call to photoverify API returned {StatusCode}.", response.Status);
+                if (_logger.IsEnabled(LogLevel.Information)) { _logger.LogInformation("Call to photoverify API returned {StatusCode}.", response.Status); }
 
                 var id = photoVerifyCall.GetTrailers().Where(t => t.Key == "jobid").Select(t => t.Value).FirstOrDefault();
                 if (string.IsNullOrEmpty(id)) { id = Guid.NewGuid().ToString(); }
