@@ -11,9 +11,15 @@
       ]
     },
     {
-      "library": "three@0.185.1",
+      // Please note: In three.module.min.js, the import from three.core.js must be manually 
+      // changed to three.core.min.js, but this only needs to be done after an update.
+      "library": "three@0.187.0",
       "destination": "wwwroot/lib/three/",
-      "files": [ "build/three.module.min.js", "build/three.core.min.js", "examples/jsm/loaders/OBJLoader.min.js" ]
+      "files": [
+        "build/three.module.min.js",
+        "build/three.core.min.js",
+        "examples/jsm/loaders/OBJLoader.min.js"
+      ]
     }
   ]
 }
